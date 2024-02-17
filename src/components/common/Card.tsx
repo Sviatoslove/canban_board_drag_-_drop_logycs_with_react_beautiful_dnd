@@ -32,7 +32,8 @@ const getStyleDraggable = (
   background: snapshot.isDragging ? 'lightgreen' : 'white',
 });
 
-// const getPercent = (partNum: number, totalNum: number): number => Math.floor((partNum*100)/totalNum)
+const getPercent = (partNum: number, totalNum: number): number =>
+  Math.floor((partNum * 100) / totalNum);
 
 const Card = ({ task, index }: ICard) => {
   return (
@@ -53,21 +54,34 @@ const Card = ({ task, index }: ICard) => {
             {task.title}
           </Box>
           <Flex sx={icons}>
-            <Badge variant="solid" bg={'#F5F5FA'} w={'94px'} fontSize={'12px'} fontWeight={'bold'} alignItems={'center'} borderRadius={10} color={'#5F646D'} justifyContent={'center'} display={'flex'}>
+            <Badge
+              variant="solid"
+              bg={'#F5F5FA'}
+              w={'94px'}
+              fontSize={'12px'}
+              fontWeight={'bold'}
+              alignItems={'center'}
+              borderRadius={10}
+              color={'#5F646D'}
+              justifyContent={'center'}
+              display={'flex'}
+            >
               {task.createdAt ? displayDate(task.createdAt) : null}
             </Badge>
             <Flex w={'96px'} justifyContent={'space-between'}>
               <Flex alignItems={'center'} color={'#5F646D'}>
-                <Icon as={CheckDouble} />{task.completedProblems}/{task.problems}
+                <Icon as={CheckDouble} />
+                {task.completedProblems}/{task.problems}
               </Flex>
-              <Avatar
-                src={'https://joesch.moe/api/v1/random?key=' + task.id}
-              />
+              <Avatar w={'24px'} h={'24px'} src={'https://joesch.moe/api/v1/random?key=' + task.id} />
             </Flex>
           </Flex>
-        
-          {/* <Progress value={z}
-          size='xs' bg='pink' hasStripe={true} h={10}/> */}
+
+          <Progress
+            value={getPercent(task.completedProblems, task.problems)}
+            size="xs"
+            colorScheme="pink"
+          />
         </Flex>
       )}
     </Draggable>
