@@ -33,7 +33,7 @@ function bgcolorChange(props: any) {
 
 const Card = ({ task, index }: ICard) => {
   return (
-    <Draggable draggableId={`${task.id}`} key={task.id} index={index}>
+    <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
         <Flex<any>
           sx={container}

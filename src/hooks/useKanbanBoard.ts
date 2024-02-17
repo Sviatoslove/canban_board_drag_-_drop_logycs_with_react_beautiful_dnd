@@ -13,7 +13,7 @@ export const useKanbanBoard = () => {
       .then((json) => {
         setIsPending(json.filter((task: ITask) => !task.completed)); //task.status === 'isPending'//change
         // setInProgress(json.filter((task: ITask) => task.status === 'inProgress'));
-        // setIsDone(json.filter((task: ITask) => task.status === 'isDone'));
+        setIsDone(json.filter((task: ITask) => task.completed)); //task.status === 'isDone'
       });
   }, []);
 
@@ -51,15 +51,15 @@ export const useKanbanBoard = () => {
     let updatedTask;
     switch (destinationDroppableId) {
       case '1': // Pending
-        updatedTask = { ...task, completed: false };//status: 'isPending'
+        updatedTask = { ...task, completed: false }; //status: 'isPending'
         setIsPending([updatedTask, ...isPending]);
         break;
       case '2': // In progress
-        updatedTask = { ...task, completed: false };//status: 'inProgress'
+        updatedTask = { ...task, completed: false }; //status: 'inProgress'
         setInProgress([updatedTask, ...inProgress]);
         break;
       case '3': // Done
-        updatedTask = { ...task, completed: true };//status: 'isDone'
+        updatedTask = { ...task, completed: true }; //status: 'isDone'
         setIsDone([updatedTask, ...isDone]);
         break;
     }
