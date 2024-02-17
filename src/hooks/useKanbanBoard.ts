@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ITask, TasksList } from '../utils/types';
 import { DropResult } from 'react-beautiful-dnd';
+import getRandomNum from '../utils/getRandomNum';
 
 export const useKanbanBoard = () => {
   const [isPending, setIsPending] = useState<TasksList>([]);
@@ -11,9 +12,24 @@ export const useKanbanBoard = () => {
     fetch('https://jsonplaceholder.typicode.com/todos')
       .then((response) => response.json())
       .then((json) => {
-        setIsPending(json.filter((task: ITask) => !task.completed)); //task.status === 'isPending'//change
+        //Костыль необходимо потом удалить
+        const tasks = json.reduce(
+          (acc: ITask[], task: ITask) =>
+            (acc = [
+              ...acc,
+              {
+                ...task,
+                createdAt: Date.now(),
+                problems: getRandomNum(50, 67),
+                completedProblems: getRandomNum(0, 45),
+              },
+            ]),
+          []
+        );
+        //----------------------------------------------------------------
+        setIsPending(tasks.filter((task: ITask) => !task.completed)); //task.status === 'isPending'//change
         // setInProgress(json.filter((task: ITask) => task.status === 'inProgress'));
-        setIsDone(json.filter((task: ITask) => task.completed)); //task.status === 'isDone'
+        setIsDone(tasks.filter((task: ITask) => task.completed)); //task.status === 'isDone'
       });
   }, []);
 
