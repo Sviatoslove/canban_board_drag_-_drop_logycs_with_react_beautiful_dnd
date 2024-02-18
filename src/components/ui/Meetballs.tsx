@@ -4,9 +4,9 @@ import CircleIcon from "../common/CircleIcon";
 const Meetballs = () => {
   return ( 
     <Flex>
-      <CircleIcon boxSize={8}/>
-      <CircleIcon boxSize={8}/>
-      <CircleIcon boxSize={8}/>
+      <CircleIcon boxSize={2} mr={'3px'}/>
+      <CircleIcon boxSize={2} mr={'3px'}/>
+      <CircleIcon boxSize={2}/>
     </Flex>
    );
 }

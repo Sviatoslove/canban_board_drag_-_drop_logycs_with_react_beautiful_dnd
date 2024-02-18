@@ -1,10 +1,12 @@
 import { Draggable, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ICard } from '../../utils/types';
-import { Avatar, Badge, Box, Flex, Icon, Progress } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Flex, Icon } from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
 import { CheckDouble } from '../../assets/icons/CheckDouble';
+import ProgressBar from './ProgressBar';
 
 const container = {
+  position: 'relative',
   w: '100%',
   maxW: '320px',
   h: '102px',
@@ -23,6 +25,19 @@ const icons = {
   h: '24px',
 };
 
+const badge = {
+  variant: 'solid',
+  bg: '#F5F5FA',
+  w: '94px',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  alignItems: 'center',
+  borderRadius: 10,
+  color: '#5F646D',
+  justifyContent: 'center',
+  display: 'flex',
+};
+
 const getStyleDraggable = (
   snapshot: DraggableStateSnapshot
 ): { [x: string]: string } => ({
@@ -32,10 +47,10 @@ const getStyleDraggable = (
   background: snapshot.isDragging ? 'lightgreen' : 'white',
 });
 
-const getPercent = (partNum: number, totalNum: number): number =>
-  Math.floor((partNum * 100) / totalNum);
-
 const Card = ({ task, index }: ICard) => {
+  const getTitle = ({ title }: { title: string }) =>
+    title.length <= 36 ? title : title.slice(0, 36) + '...';
+
   return (
     <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
@@ -51,21 +66,10 @@ const Card = ({ task, index }: ICard) => {
           }}
         >
           <Box fontSize={'14px'} fontWeight={'bold'} mb={'14px'}>
-            {task.title}
+            {getTitle(task)}
           </Box>
           <Flex sx={icons}>
-            <Badge
-              variant="solid"
-              bg={'#F5F5FA'}
-              w={'94px'}
-              fontSize={'12px'}
-              fontWeight={'bold'}
-              alignItems={'center'}
-              borderRadius={10}
-              color={'#5F646D'}
-              justifyContent={'center'}
-              display={'flex'}
-            >
+            <Badge sx={badge}>
               {task.createdAt ? displayDate(task.createdAt) : null}
             </Badge>
             <Flex w={'96px'} justifyContent={'space-between'}>
@@ -73,14 +77,16 @@ const Card = ({ task, index }: ICard) => {
                 <Icon as={CheckDouble} />
                 {task.completedProblems}/{task.problems}
               </Flex>
-              <Avatar w={'24px'} h={'24px'} src={'https://joesch.moe/api/v1/random?key=' + task.id} />
+              <Avatar
+                w={'24px'}
+                h={'24px'}
+                src={'https://joesch.moe/api/v1/random?key=' + task.id}
+              />
             </Flex>
           </Flex>
-
-          <Progress
-            value={getPercent(task.completedProblems, task.problems)}
-            size="xs"
-            colorScheme="pink"
+          <ProgressBar
+            completedProblems={task.completedProblems}
+            problems={task.problems}
           />
         </Flex>
       )}

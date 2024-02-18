@@ -26,7 +26,6 @@ const TitleColumn = ({ colorBadge, title }: ITitleColumn) => {
         h={'52px'}
         borderWidth={0}
         bg={'transparent'}
-        cursor={'pointer'}
       />
     </Flex>
   );

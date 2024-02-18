@@ -29,7 +29,6 @@ const buttonAddTask = {
   borderRadius:5,
   bg:'#fff',
   borderWidth:'2px',
-  cursor:'pointer',
 };
 
 const Column = ({ title, tasks, id, colorBadge }: IColumn) => {
