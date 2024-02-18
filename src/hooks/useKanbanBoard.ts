@@ -9,7 +9,7 @@ export const useKanbanBoard = () => {
   const [isDone, setIsDone] = useState<TasksList>([]);
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
+    fetch('https://jsonplaceholder.typicode.com/todos?_limit=20')
       .then((response) => response.json())
       .then((json) => {
         //Костыль необходимо потом удалить
@@ -36,7 +36,12 @@ export const useKanbanBoard = () => {
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
-    if (!destination || source.droppableId === destination.droppableId) return;
+    if (!destination || source.droppableId === destination.droppableId) {
+      if (source.index >= 0 && destination?.index !== undefined) {
+        moveElToIndex(source, destination);
+      } else return;
+      return;
+    }
 
     deletePreviousState(source.droppableId, draggableId);
 
@@ -46,8 +51,38 @@ export const useKanbanBoard = () => {
       ...isDone,
     ])!;
 
-    setNewState(destination.droppableId, task);
+    setNewState(destination, task);
   };
+
+  function moveElToIndex(source: any, destination: any) {
+    let task;
+    switch (source.droppableId) {
+      case '1':
+        task = isPending[source.index];
+        isPending.splice(source.index, 1);
+        if (destination.index === 0) {
+          isPending.unshift(task);
+        } else isPending.splice(destination.index, 0, task);
+        setIsPending(isPending);
+        break;
+      case '2':
+        task = inProgress[source.index];
+        inProgress.splice(source.index, 1);
+        if (destination.index === 0) {
+          inProgress.unshift(task);
+        } else inProgress.splice(destination.index, 0, task);
+        setInProgress(inProgress);
+        break;
+      case '3':
+        task = isDone[source.index];
+        isDone.splice(source.index, 1);
+        if (destination.index === 0) {
+          isDone.unshift(task);
+        } else isDone.splice(destination.index, 0, task);
+        setIsDone(isDone);
+        break;
+    }
+  }
 
   function deletePreviousState(sourceDroppableId: string, taskId: string) {
     switch (sourceDroppableId) {
@@ -63,20 +98,32 @@ export const useKanbanBoard = () => {
     }
   }
 
-  function setNewState(destinationDroppableId: string, task: ITask) {
+  function setNewState(
+    destination: { droppableId: string; index: number },
+    task: ITask
+  ) {
     let updatedTask;
-    switch (destinationDroppableId) {
+    switch (destination.droppableId) {
       case '1': // Pending
         updatedTask = { ...task, completed: false }; //status: 'isPending'
-        setIsPending([updatedTask, ...isPending]);
+        if (destination.index === 0) {
+          isPending.unshift(updatedTask);
+        } else isPending.splice(destination.index, 0, updatedTask);
+        setIsPending(isPending);
         break;
       case '2': // In progress
         updatedTask = { ...task, completed: false }; //status: 'inProgress'
-        setInProgress([updatedTask, ...inProgress]);
+        if (destination.index === 0) {
+          inProgress.unshift(task);
+        } else inProgress.splice(destination.index, 0, updatedTask);
+        setInProgress(inProgress);
         break;
       case '3': // Done
         updatedTask = { ...task, completed: true }; //status: 'isDone'
-        setIsDone([updatedTask, ...isDone]);
+        if (destination.index === 0) {
+          isDone.unshift(task);
+        } else isDone.splice(destination.index, 0, updatedTask);
+        setIsDone(isDone);
         break;
     }
   }
