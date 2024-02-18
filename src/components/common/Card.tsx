@@ -1,6 +1,6 @@
 import { Draggable, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ICard } from '../../utils/types';
-import { Avatar, Badge, Box, Flex, Icon } from '@chakra-ui/react';
+import { Avatar, Badge, Box, Flex, Icon, Text } from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
 import { CheckDouble } from '../../assets/icons/CheckDouble';
 import ProgressBar from './ProgressBar';
@@ -69,17 +69,22 @@ const Card = ({ task, index }: ICard) => {
             {getTitle(task)}
           </Box>
           <Flex sx={icons}>
-            <Badge sx={badge}>
-              {task.createdAt ? displayDate(task.createdAt) : null}
+            <Badge sx={badge} textTransform={'lowercase'}>
+              {displayDate(task.createdAt)}
             </Badge>
-            <Flex w={'96px'} justifyContent={'space-between'}>
-              <Flex alignItems={'center'} color={'#5F646D'}>
+            <Flex w={'96px'}>
+              <Flex alignItems={'center'}>
                 <Icon as={CheckDouble} />
-                {task.completedProblems}/{task.problems}
+                <Text fontSize={'12px'} color={'#5F646D'} px={'10.5px'}>
+                  {task.completedProblems}/{task.problems}
+                </Text>
               </Flex>
               <Avatar
+                ml={'2px'}
                 w={'24px'}
                 h={'24px'}
+                borderRadius={'50px'}
+                shadow={'0px 0px 6px 1px rgba(0,0,0,0.2)'}
                 src={'https://joesch.moe/api/v1/random?key=' + task.id}
               />
             </Flex>
