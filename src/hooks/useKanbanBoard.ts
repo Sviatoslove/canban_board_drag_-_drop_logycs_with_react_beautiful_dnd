@@ -1,7 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction, Dispatch } from 'react';
 import { ITask, TasksList } from '../utils/types';
 import { DropResult } from 'react-beautiful-dnd';
 import getRandomNum from '../utils/getRandomNum';
+
+interface ISource {
+  droppableId: string;
+  index: number;
+}
+
+type setState = Dispatch<SetStateAction<TasksList>>;
 
 export const useKanbanBoard = () => {
   const [isPending, setIsPending] = useState<TasksList>([]);
@@ -38,94 +45,93 @@ export const useKanbanBoard = () => {
 
     if (!destination || source.droppableId === destination.droppableId) {
       if (source.index >= 0 && destination?.index !== undefined) {
-        moveElToIndex(source, destination);
+        setNewState(source, 'source', destination.index);
       } else return;
       return;
     }
+    // delete elem if drappble changed
+    reformPreviousState(source.droppableId, draggableId, 'delete');
+    //find elem in previous droppable
+    const task = reformPreviousState(source.droppableId, draggableId, 'find');
 
-    deletePreviousState(source.droppableId, draggableId);
-
-    const task = findItemById(draggableId, [
-      ...inProgress,
-      ...isPending,
-      ...isDone,
-    ])!;
-
-    setNewState(destination, task);
+    setNewState(destination, 'destination', undefined, task);
   };
 
-  function moveElToIndex(source: any, destination: any) {
-    let task;
-    switch (source.droppableId) {
-      case '1':
-        task = isPending[source.index];
-        isPending.splice(source.index, 1);
-        if (destination.index === 0) {
-          isPending.unshift(task);
-        } else isPending.splice(destination.index, 0, task);
-        setIsPending(isPending);
-        break;
-      case '2':
-        task = inProgress[source.index];
-        inProgress.splice(source.index, 1);
-        if (destination.index === 0) {
-          inProgress.unshift(task);
-        } else inProgress.splice(destination.index, 0, task);
-        setInProgress(inProgress);
-        break;
-      case '3':
-        task = isDone[source.index];
-        isDone.splice(source.index, 1);
-        if (destination.index === 0) {
-          isDone.unshift(task);
-        } else isDone.splice(destination.index, 0, task);
-        setIsDone(isDone);
-        break;
+  function reformPreviousState(
+    sourceDroppableId: string,
+    taskId: string,
+    action: string
+  ) {
+    let goScript: any;
+    if (action === 'delete') {
+      goScript = (taskId: string, state: ITask[], setState: setState) =>
+        setState(removeItemById(taskId, state));
+    } else if (action === 'find') {
+      goScript = (taskId: string, state: ITask[]) =>
+        findItemById(taskId, state);
     }
-  }
-
-  function deletePreviousState(sourceDroppableId: string, taskId: string) {
     switch (sourceDroppableId) {
       case '1':
-        setIsPending(removeItemById(taskId, isPending));
-        break;
+        return goScript(taskId, isPending, setIsPending);
       case '2':
-        setInProgress(removeItemById(taskId, inProgress));
-        break;
+        return goScript(taskId, inProgress, setInProgress);
       case '3':
-        setIsDone(removeItemById(taskId, isDone));
-        break;
+        return goScript(taskId, isDone, setIsDone);
     }
   }
 
   function setNewState(
-    destination: { droppableId: string; index: number },
-    task: ITask
+    source: ISource,
+    action: string,
+    destinationIndex?: number,
+    task?: ITask
   ) {
-    let updatedTask;
-    switch (destination.droppableId) {
+    let goScript: any;
+    const { droppableId, index } = source;
+    if (action === 'source') {
+      goScript = (index: number, setState: setState, state: ITask[]) =>
+        destinationReform(destinationIndex!, setState, state, index);
+    } else if (action === 'destination') {
+      let completed: boolean = false;
+      if (droppableId === '3') completed = true;
+      goScript = (
+        index: number,
+        setState: setState,
+        state: ITask[],
+        task: ITask
+      ) =>
+        destinationReform(index, setState, state, undefined, completed, task);
+    }
+    switch (droppableId) {
       case '1': // Pending
-        updatedTask = { ...task, completed: false }; //status: 'isPending'
-        if (destination.index === 0) {
-          isPending.unshift(updatedTask);
-        } else isPending.splice(destination.index, 0, updatedTask);
-        setIsPending(isPending);
+        goScript(index, setIsPending, isPending, task);
         break;
       case '2': // In progress
-        updatedTask = { ...task, completed: false }; //status: 'inProgress'
-        if (destination.index === 0) {
-          inProgress.unshift(task);
-        } else inProgress.splice(destination.index, 0, updatedTask);
-        setInProgress(inProgress);
+        goScript(index, setInProgress, inProgress, task);
         break;
       case '3': // Done
-        updatedTask = { ...task, completed: true }; //status: 'isDone'
-        if (destination.index === 0) {
-          isDone.unshift(task);
-        } else isDone.splice(destination.index, 0, updatedTask);
-        setIsDone(isDone);
+        goScript(index, setIsDone, isDone, task);
         break;
     }
+  }
+
+  function destinationReform(
+    index: number,
+    setState: setState,
+    state: ITask[],
+    sourceIndex?: number,
+    completed?: boolean,
+    task?: ITask
+  ) {
+    let updatedTask: any;
+    if (sourceIndex !== undefined) {
+      updatedTask = state[sourceIndex];
+      state.splice(sourceIndex, 1);
+    } else updatedTask = { ...task, completed }; //status?
+    if (index === 0) {
+      state.unshift(updatedTask);
+    } else state.splice(index, 0, updatedTask);
+    setState(state);
   }
 
   function findItemById(id: string, array: TasksList) {
