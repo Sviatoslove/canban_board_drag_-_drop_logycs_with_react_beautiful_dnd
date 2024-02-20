@@ -31,7 +31,7 @@ const buttonAddTask = {
   borderWidth:'2px',
 };
 
-const Column = ({ title, tasks, id, colorBadge }: IColumn) => {
+const Column = ({ title, state:tasks, id, colorBadge }: IColumn) => {
   const getBackgroundColor = (snapshot: DroppableStateSnapshot): string => {
     if (snapshot.isDraggingOver) return 'lightpink';
     if (snapshot.draggingFromThisWith) return 'lightgreen';

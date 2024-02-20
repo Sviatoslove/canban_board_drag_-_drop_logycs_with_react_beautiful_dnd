@@ -21,31 +21,12 @@ const ColumnList = memo((props: { columns: IColumn[] }): any =>
 );
 
 const KanbanBoard = () => {
-  const { handleDragEnd, isPending, inProgress, isDone } = useKanbanBoard();
-  const columns = [
-    {
-      id: '1',
-      title: 'Pending',
-      tasks: isPending,
-      colorBadge: 'red',
-    },
-    {
-      id: '2',
-      title: 'In progress',
-      tasks: inProgress,
-      colorBadge: 'orange',
-    },
-    {
-      id: '3',
-      title: 'Done',
-      tasks: isDone,
-      colorBadge: 'green',
-    },
-  ];
+  const { handleDragEnd, COLUMNS } = useKanbanBoard();
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Flex sx={styles}>
-        <ColumnList columns={columns} />
+        <ColumnList columns={Object.values(COLUMNS)} />
       </Flex>
     </DragDropContext>
   );

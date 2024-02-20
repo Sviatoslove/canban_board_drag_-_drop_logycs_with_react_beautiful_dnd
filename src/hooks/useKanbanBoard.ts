@@ -1,19 +1,53 @@
-import { useState, useEffect, SetStateAction, Dispatch } from 'react';
-import { ITask, TasksList } from '../utils/types';
+import { useState, useEffect } from 'react';
+import {
+  IColumns,
+  IGoScriptReformPreviousState,
+  IGoScriptSetnewState,
+  ISource,
+  ITask,
+  TasksList,
+  setState,
+} from '../utils/types';
 import { DropResult } from 'react-beautiful-dnd';
 import getRandomNum from '../utils/getRandomNum';
-
-interface ISource {
-  droppableId: string;
-  index: number;
-}
-
-type setState = Dispatch<SetStateAction<TasksList>>;
 
 export const useKanbanBoard = () => {
   const [isPending, setIsPending] = useState<TasksList>([]);
   const [inProgress, setInProgress] = useState<TasksList>([]);
   const [isDone, setIsDone] = useState<TasksList>([]);
+  // const [isWorking, setIsWorking] = useState<TasksList>([]);
+
+  const COLUMNS: IColumns = {
+    '1': {
+      id: '1',
+      title: 'Pending',
+      state: isPending,
+      setState: setIsPending,
+      colorBadge: 'red',
+    },
+    '2': {
+      id: '2',
+      title: 'Progress',
+      state: inProgress,
+      setState: setInProgress,
+      colorBadge: 'orange',
+    },
+    '3': {
+      id: '3',
+      title: 'Done',
+      state: isDone,
+      setState: setIsDone,
+      colorBadge: 'green',
+      completed: true
+    },
+    // '4': {
+    //   id: '4',
+    //   title: 'Extra Working',
+    //   state: isWorking,
+    //   setState: setIsWorking,
+    //   colorBadge: 'pink',
+    // },
+  };
 
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/todos?_limit=20')
@@ -42,7 +76,6 @@ export const useKanbanBoard = () => {
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
-
     if (!destination || source.droppableId === destination.droppableId) {
       if (source.index >= 0 && destination?.index !== undefined) {
         setNewState(source, 'source', destination.index);
@@ -64,20 +97,17 @@ export const useKanbanBoard = () => {
   ) {
     let goScript: any;
     if (action === 'delete') {
-      goScript = (taskId: string, state: ITask[], setState: setState) =>
-        setState(removeItemById(taskId, state));
+      goScript = ({ taskId, state, setState }: IGoScriptReformPreviousState) =>
+        setState!(removeItemById(taskId, state));
     } else if (action === 'find') {
-      goScript = (taskId: string, state: ITask[]) =>
+      goScript = ({ taskId, state }: IGoScriptReformPreviousState) =>
         findItemById(taskId, state);
     }
-    switch (sourceDroppableId) {
-      case '1':
-        return goScript(taskId, isPending, setIsPending);
-      case '2':
-        return goScript(taskId, inProgress, setInProgress);
-      case '3':
-        return goScript(taskId, isDone, setIsDone);
-    }
+    return goScript({
+      taskId,
+      state: COLUMNS[sourceDroppableId].state,
+      setState: COLUMNS[sourceDroppableId].setState,
+    });
   }
 
   function setNewState(
@@ -89,36 +119,26 @@ export const useKanbanBoard = () => {
     let goScript: any;
     const { droppableId, index } = source;
     if (action === 'source') {
-      goScript = (index: number, setState: setState, state: ITask[]) =>
-        destinationReform(destinationIndex!, setState, state, index);
+      goScript = ({ index, state, setState }: IGoScriptSetnewState) =>
+        destinationReform(destinationIndex!, state, setState, index);
     } else if (action === 'destination') {
       let completed: boolean = false;
-      if (droppableId === '3') completed = true;
-      goScript = (
-        index: number,
-        setState: setState,
-        state: ITask[],
-        task: ITask
-      ) =>
-        destinationReform(index, setState, state, undefined, completed, task);
+      if (COLUMNS[droppableId].completed) completed = COLUMNS[droppableId].completed!;
+      goScript = ({ index, state, setState, task }: IGoScriptSetnewState) =>
+        destinationReform(index, state, setState, undefined, completed, task);
     }
-    switch (droppableId) {
-      case '1': // Pending
-        goScript(index, setIsPending, isPending, task);
-        break;
-      case '2': // In progress
-        goScript(index, setInProgress, inProgress, task);
-        break;
-      case '3': // Done
-        goScript(index, setIsDone, isDone, task);
-        break;
-    }
+    goScript({
+      index,
+      state: COLUMNS[droppableId].state,
+      setState: COLUMNS[droppableId].setState,
+      task,
+    });
   }
 
   function destinationReform(
     index: number,
-    setState: setState,
     state: ITask[],
+    setState: setState,
     sourceIndex?: number,
     completed?: boolean,
     task?: ITask
@@ -144,8 +164,6 @@ export const useKanbanBoard = () => {
 
   return {
     handleDragEnd,
-    isPending,
-    inProgress,
-    isDone,
+    COLUMNS
   };
 };
