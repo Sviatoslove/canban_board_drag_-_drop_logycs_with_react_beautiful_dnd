@@ -1,78 +1,76 @@
 import { useState, useEffect } from 'react';
 import {
+  HandleAddTask,
   IColumns,
+  IGlobalTasks,
   IGoScriptReformPreviousState,
   IGoScriptSetnewState,
   ISource,
   ITask,
+  IUserColumn,
   TasksList,
   setState,
 } from '../utils/types';
 import { DropResult } from 'react-beautiful-dnd';
+import { tasksService } from '../services/tasks.service';
 import getRandomNum from '../utils/getRandomNum';
 
-export const useKanbanBoard = () => {
-  const [isPending, setIsPending] = useState<TasksList>([]);
-  const [inProgress, setInProgress] = useState<TasksList>([]);
-  const [isDone, setIsDone] = useState<TasksList>([]);
-  // const [isWorking, setIsWorking] = useState<TasksList>([]);
+export const useKanbanBoard = (userColumns: IUserColumn[]) => {
+  const [columns, setColumns] = useState<IColumns>({});
 
-  const COLUMNS: IColumns = {
-    '1': {
-      id: '1',
-      title: 'Pending',
-      state: isPending,
-      setState: setIsPending,
-      colorBadge: 'red',
-    },
-    '2': {
-      id: '2',
-      title: 'Progress',
-      state: inProgress,
-      setState: setInProgress,
-      colorBadge: 'orange',
-    },
-    '3': {
-      id: '3',
-      title: 'Done',
-      state: isDone,
-      setState: setIsDone,
-      colorBadge: 'green',
-      completed: true
-    },
-    // '4': {
-    //   id: '4',
-    //   title: 'Extra Working',
-    //   state: isWorking,
-    //   setState: setIsWorking,
-    //   colorBadge: 'pink',
-    // },
-  };
+  const [tasks, setTasks] = useState<IGlobalTasks>({});
+
+  const initialTasks: any = userColumns.reduce(
+    (acc: any, { title, completed }: IUserColumn): any =>
+      (acc = { ...acc, [`is${title}`]: [{ completed }] }),
+    {}
+  );
 
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos?_limit=20')
-      .then((response) => response.json())
-      .then((json) => {
-        //Костыль необходимо потом удалить
-        const tasks = json.reduce(
-          (acc: ITask[], task: ITask) =>
-            (acc = [
-              ...acc,
-              {
-                ...task,
-                createdAt: Date.now(),
-                problems: getRandomNum(50, 67),
-                completedProblems: getRandomNum(0, 45),
-              },
-            ]),
-          []
-        );
-        //----------------------------------------------------------------
-        setIsPending(tasks.filter((task: ITask) => !task.completed)); //task.status === 'isPending'//change
-        // setInProgress(json.filter((task: ITask) => task.status === 'inProgress'));
-        setIsDone(tasks.filter((task: ITask) => task.completed)); //task.status === 'isDone'
-      });
+    tasksService.get().then((res) => {
+      let completed: TasksList = [];
+      let uncompleted: TasksList = [];
+
+      res.forEach((item: ITask) =>
+        item.completed ? completed.push(item) : uncompleted.push(item)
+      );
+
+      setTasks(
+        Object.keys(initialTasks).reduce((acc, key) => {
+          if (initialTasks[key][0].completed === false)
+            acc = { ...acc, [key]: uncompleted };
+          if (initialTasks[key][0].completed === true)
+            acc = { ...acc, [key]: completed };
+          if (initialTasks[key][0].completed === undefined)
+            acc = { ...acc, [key]: [] };
+          return acc;
+        }, {})
+      );
+    });
   }, []);
+
+  useEffect(() => {
+    if (Object.values(tasks).length) {
+      setColumns(
+        userColumns.reduce(
+          (acc: any, column: any) =>
+            (acc = {
+              ...acc,
+              [column.id]: {
+                ...column,
+                state: tasks[`is${column.title}`],
+                setState: (state: TasksList) =>
+                  setTasks((prevState) => ({
+                    ...prevState,
+                    [`is${column.title}`]: state,
+                  })),
+              },
+            }),
+          {}
+        )
+      );
+    }
+  }, [tasks]);
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -105,8 +103,8 @@ export const useKanbanBoard = () => {
     }
     return goScript({
       taskId,
-      state: COLUMNS[sourceDroppableId].state,
-      setState: COLUMNS[sourceDroppableId].setState,
+      state: columns[sourceDroppableId].state,
+      setState: columns[sourceDroppableId].setState,
     });
   }
 
@@ -123,14 +121,15 @@ export const useKanbanBoard = () => {
         destinationReform(destinationIndex!, state, setState, index);
     } else if (action === 'destination') {
       let completed: boolean = false;
-      if (COLUMNS[droppableId].completed) completed = COLUMNS[droppableId].completed!;
+      if (columns[droppableId].completed)
+        completed = columns[droppableId].completed!;
       goScript = ({ index, state, setState, task }: IGoScriptSetnewState) =>
         destinationReform(index, state, setState, undefined, completed, task);
     }
     goScript({
       index,
-      state: COLUMNS[droppableId].state,
-      setState: COLUMNS[droppableId].setState,
+      state: columns[droppableId].state,
+      setState: columns[droppableId].setState,
       task,
     });
   }
@@ -162,8 +161,22 @@ export const useKanbanBoard = () => {
     return array.filter((item) => item.id != id);
   }
 
+  const handleAddTask: HandleAddTask = (id) => {
+      const newTask = {
+        completed: false,
+        createdAt: Date.now(),
+        problems: getRandomNum(50, 67),
+        completedProblems: getRandomNum(0, 45),
+        id: Date.now().toString(),
+        title: 'Я новая таска',
+        userId: '1',
+      };
+      columns[id].setState!([...columns[id].state, newTask])
+  };
+
   return {
     handleDragEnd,
-    COLUMNS
+    columns,
+    handleAddTask,
   };
 };

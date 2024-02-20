@@ -8,7 +8,7 @@ import ProgressBar from './ProgressBar';
 const container = {
   position: 'relative',
   w: '100%',
-  maxW: '320px',
+  minW: '320px',
   h: '102px',
   borderRadius: '10px',
   p: '18px 23px 23px 15px',

@@ -2,36 +2,40 @@ import { IColumn } from '../../utils/types';
 import { Droppable, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import Card from './Card';
 import { Button, Flex } from '@chakra-ui/react';
-import TitleColumn from '../ui/TitleColumn'
+import TitleColumn from '../ui/TitleColumn';
 import AddIconTask from '../../assets/icons/AddIconTask';
 
 const columnStyles = {
   flexDirection: 'column',
   w: '100%',
-  maxW: '332px',
+  minW: '332px',
   h: '649px',
+  mr: '8px',
 };
 
 const wrapperCard = {
   flexDirection: 'column',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  height: '100%',
   borderRadius: '10px',
+  position: 'relative',
 };
 
 const buttonAddTask = {
-  maxW:'320px',
-  w:'100%',
-  h:'52px',
-  border:'dotted',
-  borderColor:'#CFDBD5',
-  borderRadius:5,
-  bg:'#fff',
-  borderWidth:'2px',
+  minW: '320px',
+  w: '100%',
+  h: '52px',
+  border: 'dotted',
+  borderColor: '#CFDBD5',
+  borderRadius: 5,
+  bg: '#fff',
+  borderWidth: '2px',
+  top: 0,
+  left: 0,
 };
 
-const Column = ({ title, state:tasks, id, colorBadge }: IColumn) => {
+const Column = ({ title, state: tasks, id, colorBadge, handleAddTask }: IColumn) => {
+  const getStylesBtn = (style: string, value: string[]) =>
+    tasks.length ? { [style]: value[0] } : { [style]: value[1] };
+
   const getBackgroundColor = (snapshot: DroppableStateSnapshot): string => {
     if (snapshot.isDraggingOver) return 'lightpink';
     if (snapshot.draggingFromThisWith) return 'lightgreen';
@@ -39,27 +43,33 @@ const Column = ({ title, state:tasks, id, colorBadge }: IColumn) => {
   };
 
   return (
-    <Flex sx={columnStyles}>
+    <Flex sx={columnStyles} className="columns">
       <TitleColumn title={title} colorBadge={colorBadge} />
       <Droppable droppableId={id}>
         {(provided, snapshot) => (
           <Flex<any>
             sx={wrapperCard}
+            {...getStylesBtn('height', ['fit-content', '170px'])}
             ref={provided.innerRef}
             {...provided.droppableProps}
             isdraggingover={snapshot.isDraggingOver.toString()}
             bg={getBackgroundColor(snapshot)}
           >
-            {tasks.map((task, index) => (
+            {tasks?.map((task, index) => (
               <Card key={index} index={index} task={task} />
             ))}
             {provided.placeholder}
+            <Button
+              onClick={() => handleAddTask!(id) }
+              leftIcon={<AddIconTask />}
+              sx={buttonAddTask}
+              style={{ ...getStylesBtn('position', ['static', 'absolute']) }}
+            >
+              Add a task
+            </Button>
           </Flex>
         )}
       </Droppable>
-      <Button leftIcon={<AddIconTask/>}
-        sx={buttonAddTask}
-      >Add a task</Button>
     </Flex>
   );
 };

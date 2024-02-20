@@ -1,7 +1,8 @@
 import { Badge, Flex, IconButton } from '@chakra-ui/react';
 import Meetballs from './Meetballs';
+import { ITitleColumn } from '../../utils/types';
 
-const badgeTitle = (colorBadge: string) => ({
+const badgeTitle = (colorBadge?: string) => ({
   borderRadius: 15,
   bgColor: colorBadge,
   px: '15px',
@@ -9,11 +10,6 @@ const badgeTitle = (colorBadge: string) => ({
   variant: 'solid',
   color: 'white',
 });
-
-interface ITitleColumn {
-  colorBadge: string;
-  title: string;
-}
 
 const TitleColumn = ({ colorBadge, title }: ITitleColumn) => {
   return (

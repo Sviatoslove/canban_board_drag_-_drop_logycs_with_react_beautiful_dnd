@@ -1,21 +1,31 @@
 import { Dispatch, SetStateAction } from 'react';
 
-export interface ITask {
+export interface IUserColumn {
   id: string;
   title: string;
-  completed: boolean;
-  createdAt: number;
+  colorBadge?: string;
+  completed?: boolean;
+}
+
+export interface ITask extends IUserColumn {
+  createdAt: number
   problems: number;
   completedProblems: number; //status: string???
 }
 
 export type TasksList = ITask[];
 
-export interface IColumn {
-  title: string;
+export type HandleAddTask = (id:string) => void
+
+export interface IColumn extends IUserColumn {
   state: TasksList;
-  id: string;
-  colorBadge: string;
+  setState?: setState;
+  handleAddTask?: HandleAddTask
+}
+
+export interface ITitleColumn {
+  colorBadge?: string;
+  title: string;
 }
 
 export interface ICard {
@@ -29,14 +39,7 @@ export interface ISource {
 }
 
 export interface IColumns {
-  [x: string]: {
-    id: string;
-    title: string;
-    state: ITask[];
-    setState: setState;
-    colorBadge: string;
-    completed?:boolean
-  };
+  [x: string]: IColumn
 }
 
 export type setState = Dispatch<SetStateAction<TasksList>>;
@@ -52,4 +55,8 @@ export interface IGoScriptSetnewState {
   state: ITask[];
   setState: setState;
   task?: ITask;
+}
+
+export interface IGlobalTasks {
+  [x: string]: TasksList;
 }
