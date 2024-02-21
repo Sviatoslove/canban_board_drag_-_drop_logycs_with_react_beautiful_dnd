@@ -16,15 +16,7 @@ import { tasksService } from '../services/tasks.service';
 import getRandomNum from '../utils/getRandomNum';
 
 export const useKanbanBoard = (userColumns: IUserColumn[]) => {
-  const [columns, setColumns] = useState<IColumns>({});
-
-  const [tasks, setTasks] = useState<IGlobalTasks>({});
-
-  const initialTasks: any = userColumns.reduce(
-    (acc: any, { title, completed }: IUserColumn): any =>
-      (acc = { ...acc, [`is${title}`]: [{ completed }] }),
-    {}
-  );
+  const [tasks, setTasks] = useState<IColumns>({});
 
   useEffect(() => {
     tasksService.get().then((res) => {
@@ -36,41 +28,33 @@ export const useKanbanBoard = (userColumns: IUserColumn[]) => {
       );
 
       setTasks(
-        Object.keys(initialTasks).reduce((acc, key) => {
-          if (initialTasks[key][0].completed === false)
-            acc = { ...acc, [key]: uncompleted };
-          if (initialTasks[key][0].completed === true)
-            acc = { ...acc, [key]: completed };
-          if (initialTasks[key][0].completed === undefined)
-            acc = { ...acc, [key]: [] };
-          return acc;
-        }, {})
-      );
-    });
-  }, []);
-
-  useEffect(() => {
-    if (Object.values(tasks).length) {
-      setColumns(
         userColumns.reduce(
           (acc: any, column: any) =>
             (acc = {
               ...acc,
               [column.id]: {
                 ...column,
-                state: tasks[`is${column.title}`],
+                state:
+                  column.completed === undefined
+                    ? []
+                    : column.completed
+                    ? completed
+                    : uncompleted,
                 setState: (state: TasksList) =>
                   setTasks((prevState) => ({
                     ...prevState,
-                    [`is${column.title}`]: state,
+                    [column.id]: {
+                      ...prevState[column.id],
+                      state: state,
+                    },
                   })),
               },
             }),
           {}
         )
       );
-    }
-  }, [tasks]);
+    });
+  }, []);
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -103,8 +87,8 @@ export const useKanbanBoard = (userColumns: IUserColumn[]) => {
     }
     return goScript({
       taskId,
-      state: columns[sourceDroppableId].state,
-      setState: columns[sourceDroppableId].setState,
+      state: tasks[sourceDroppableId].state,
+      setState: tasks[sourceDroppableId].setState,
     });
   }
 
@@ -121,15 +105,15 @@ export const useKanbanBoard = (userColumns: IUserColumn[]) => {
         destinationReform(destinationIndex!, state, setState, index);
     } else if (action === 'destination') {
       let completed: boolean = false;
-      if (columns[droppableId].completed)
-        completed = columns[droppableId].completed!;
+      if (tasks[droppableId].completed)
+        completed = tasks[droppableId].completed!;
       goScript = ({ index, state, setState, task }: IGoScriptSetnewState) =>
         destinationReform(index, state, setState, undefined, completed, task);
     }
     goScript({
       index,
-      state: columns[droppableId].state,
-      setState: columns[droppableId].setState,
+      state: tasks[droppableId].state,
+      setState: tasks[droppableId].setState,
       task,
     });
   }
@@ -162,21 +146,21 @@ export const useKanbanBoard = (userColumns: IUserColumn[]) => {
   }
 
   const handleAddTask: HandleAddTask = (id) => {
-      const newTask = {
-        completed: false,
-        createdAt: Date.now(),
-        problems: getRandomNum(50, 67),
-        completedProblems: getRandomNum(0, 45),
-        id: Date.now().toString(),
-        title: 'Я новая таска',
-        userId: '1',
-      };
-      columns[id].setState!([...columns[id].state, newTask])
+    const newTask = {
+      completed: false,
+      createdAt: Date.now(),
+      problems: getRandomNum(50, 67),
+      completedProblems: getRandomNum(0, 45),
+      id: Date.now().toString(),
+      title: 'Я новая таска',
+      userId: '1',
+    };
+    tasks[id].setState!([...tasks[id].state, newTask]);
   };
 
   return {
     handleDragEnd,
-    columns,
+    tasks,
     handleAddTask,
   };
 };

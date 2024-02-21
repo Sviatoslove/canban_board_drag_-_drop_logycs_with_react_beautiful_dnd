@@ -18,7 +18,7 @@ const styles = {
 };
 
 const ColumnList = memo(
-  (props: { columns: IColumn[]; handleAddTask: HandleAddTask}): any =>
+  (props: { columns: IColumn[]; handleAddTask: HandleAddTask }): any =>
     props.columns.map((column: IColumn) => (
       <Column {...column} handleAddTask={props.handleAddTask} key={column.id} />
     ))
@@ -32,17 +32,17 @@ const KanbanBoard = () => {
       colorBadge: 'red',
       completed: false,
     },
-    {
-      id: '2',
-      title: 'Progress',
-      colorBadge: 'orange',
-    },
-    {
-      id: '5',
-      title: 'Done',
-      colorBadge: 'green',
-      completed: true,
-    },
+    // {
+    //   id: '2',
+    //   title: 'Progress',
+    //   colorBadge: 'orange',
+    // },
+    // {
+    //   id: '5',
+    //   title: 'Done',
+    //   colorBadge: 'green',
+    //   completed: true,
+    // },
     // {
     //   id: '4',
     //   title: 'Extra Working',
@@ -53,8 +53,24 @@ const KanbanBoard = () => {
     //   title: 'Double Mount',
     //   colorBadge: 'darkgreen',
     // },
+    // {
+    //   id: '6',
+    //   title: 'DoubleMount',
+    //   colorBadge: 'black',
+    // },
+    // {
+    //   id: '7',
+    //   title: 'Doubleount',
+    //   colorBadge: 'lightyellow',
+    // },
+    // {
+    //   id: '8',
+    //   title: 'Doublet',
+    //   colorBadge: 'darkpink',
+    // },
   ];
-  const { handleDragEnd, columns, handleAddTask } = useKanbanBoard(userColumns);
+  const { handleDragEnd, tasks: columns, handleAddTask } = useKanbanBoard(userColumns);
+
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

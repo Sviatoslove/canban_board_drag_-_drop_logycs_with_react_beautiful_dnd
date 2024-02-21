@@ -33,6 +33,7 @@ const ProgressBar = ({ completedProblems, problems }: IProgressBar) => {
 
   return (
     <Progress
+      className='progressBar'
       value={value}
       size="xs"
       position={'absolute'}
