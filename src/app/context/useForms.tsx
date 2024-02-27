@@ -13,7 +13,7 @@ import {
   formSettings,
 } from '../components/ui/forms/settingsForm';
 import { useAppDispatch, useAppSelector } from '../store/createStore';
-import { addColumn, selectColumns } from '../store/columnsSlice';
+import { addColumn, addTask, selectColumns } from '../store/columnsSlice';
 import { IFormsState } from '../hooks/useFormsData';
 import getRandomNum from '../utils/getRandomNum';
 
@@ -23,7 +23,7 @@ const defaultState = {
   onClose: () => {},
   openingForm: (e: EventClick, id?: string) => {},
   onToast: (type?: string) => {},
-  onSubmit: (data:IFormsState, columnId?:string) => {},
+  onSubmit: (data: IFormsState, columnId?: string) => {},
 };
 
 const FormsContext = createContext<IFormsContext>(defaultState);
@@ -85,6 +85,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           completed: Boolean(completed),
           state: [newTask],
         };
+        dispatch(addColumn(column!));
         break;
       }
       case 'addTask': {
@@ -92,10 +93,10 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           ...storeColumns[columnId!],
           state: [...storeColumns[columnId!].state, newTask],
         };
+        dispatch(addTask(column!));
         break;
       }
     }
-    dispatch(addColumn(column!));
     onClose();
     onToast();
   };

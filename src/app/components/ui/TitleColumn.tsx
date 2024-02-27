@@ -1,22 +1,7 @@
-import { Badge, Flex, IconButton } from '@chakra-ui/react';
+import { Badge, Flex } from '@chakra-ui/react';
 import Meetballs from './Meetballs';
-import { EventClick, IColumn, IColumns, ITitleColumn } from '../../utils/types';
+import { ITitleColumn } from '../../utils/types';
 import CustomSelectField from './forms/CustomSelectField';
-import { useAppDispatch, useAppSelector } from '../../store/createStore';
-import {
-  addColumn,
-  renameColumn,
-  selectColumns,
-} from '../../store/columnsSlice';
-import { colorsBadge } from './forms/settingsForm';
-import getRandomNum from '../../utils/getRandomNum';
-import { useForms } from '../../context/useForms';
-import { useRef, useState } from 'react';
-import TextField from './forms/TextField';
-import { IStateProps, useFormsData } from '../../hooks/useFormsData';
-import { validatorConfig } from '../../utils/validator';
-import { OnsubmitFunc } from '../../context/useFormsTypes';
-import { EditIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import EditableField from '../common/fields/EditableField';
 import useRenameField from '../../hooks/useRenameField';
 
@@ -41,7 +26,7 @@ const TitleColumn = ({ colorBadge, title, color, columnId }: ITitleColumn) => {
     onSubmit,
     handleAddColumn
   } = useRenameField(title);
-  
+
   return (
     <Flex alignItems={'center'} justifyContent={'space-between'} mb={'19px'}>
       {!renameTitle ? (
