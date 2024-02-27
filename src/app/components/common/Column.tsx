@@ -3,7 +3,7 @@ import { Droppable, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import Card from './Card';
 import { Button, Flex } from '@chakra-ui/react';
 import TitleColumn from '../ui/TitleColumn';
-import AddIconTask from '../../assets/icons/AddIconTask';
+import AddIconTask from '../../../assets/icons/AddIconTask';
 
 const columnStyles = {
   flexDirection: 'column',
@@ -32,7 +32,15 @@ const buttonAddTask = {
   left: 0,
 };
 
-const Column = ({ title, state: tasks, id, colorBadge, handleAddTask }: IColumn) => {
+const Column = ({
+  title,
+  colorText,
+  state: tasks,
+  id,
+  colorBadge,
+  openingForm,
+}: IColumn) => {
+
   const getStylesBtn = (style: string, value: string[]) =>
     tasks.length ? { [style]: value[0] } : { [style]: value[1] };
 
@@ -44,7 +52,7 @@ const Column = ({ title, state: tasks, id, colorBadge, handleAddTask }: IColumn)
 
   return (
     <Flex sx={columnStyles} className="columns">
-      <TitleColumn title={title} colorBadge={colorBadge} />
+      <TitleColumn title={title} colorBadge={colorBadge} color={colorText} columnId={id} />
       <Droppable droppableId={id}>
         {(provided, snapshot) => (
           <Flex<any>
@@ -60,7 +68,8 @@ const Column = ({ title, state: tasks, id, colorBadge, handleAddTask }: IColumn)
             ))}
             {provided.placeholder}
             <Button
-              onClick={() => handleAddTask!(id) }
+              onClick={(e) => openingForm!(e, id)}
+              datatype="addTask"
               leftIcon={<AddIconTask />}
               sx={buttonAddTask}
               style={{ ...getStylesBtn('position', ['static', 'absolute']) }}

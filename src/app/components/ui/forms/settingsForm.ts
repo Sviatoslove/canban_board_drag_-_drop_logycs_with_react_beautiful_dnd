@@ -1,0 +1,201 @@
+export interface IDefaultState {
+  [key: string]: string;
+}
+
+export interface IFields {
+  name: string;
+  label: string;
+  typeField: string;
+  options?: IDefaultState[];
+  placeholder?: string;
+  titleList?: string;
+}
+
+interface IFormSettings {
+  [key: string]: {
+    title: string;
+    btnTitle: string;
+    fields: IFields[];
+    defaultState: IDefaultState;
+  };
+}
+
+export const colorsBadge = [
+  {
+    name: 'Красный',
+    value: 'red',
+  },
+  {
+    name: 'Синий',
+    value: 'blue',
+  },
+  {
+    name: 'Тёмно-синий',
+    value: 'darkblue',
+  },
+  {
+    name: 'Розовый',
+    value: 'pink',
+  },
+  {
+    name: 'Фиолетовый',
+    value: 'purple',
+  },
+  {
+    name: 'Тёмно-красный',
+    value: 'darkred',
+  },
+  {
+    name: 'Оранжевый',
+    value: 'orange',
+  },
+  {
+    name: 'Зелёный',
+    value: 'green',
+  },
+  {
+    name: 'Тёмно-зелёный',
+    value: 'darkgreen',
+  },
+  {
+    name: 'Чёрный',
+    value: 'black',
+  },
+  {
+    name: 'Жёлтый',
+    value: 'yellow',
+  },
+  {
+    name: 'Тёмно-жёлтый',
+    value: '#576a00',
+  },
+]
+
+export const formSettings: IFormSettings = {
+  addColumn: {
+    title: 'Добавьте колонку и задачу',
+    btnTitle: 'Добавить колонку и задачу',
+    fields: [
+      {
+        name: 'columnName',
+        label: 'Название колонки',
+        typeField: 'textField',
+      },
+      {
+        name: 'colorBadge',
+        label: 'Стилизуй заголовок колонки',
+        typeField: 'customSelectField',
+        placeholder: 'Выбери цвет...',
+        titleList: 'Выбери цвет фона заголовка...',
+        options: colorsBadge,
+      },
+      {
+        name: 'colorText',
+        label: 'Выберите цвет текста заголовка колонки',
+        typeField: 'customSelectField',
+        placeholder: 'Выбери цвет...',
+        titleList: 'Выбери цвет текста заголовка...',
+        options: [
+          {
+            name: 'Белый',
+            value: 'white',
+          },
+          {
+            name: 'Чёрный',
+            value: 'black',
+          },
+          {
+            name: 'Серый',
+            value: 'grey',
+          },
+          {
+            name: 'Красный',
+            value: 'red',
+          },
+          {
+            name: 'Синий',
+            value: 'blue',
+          },
+          {
+            name: 'Тёмно-синий',
+            value: 'darkblue',
+          },
+          {
+            name: 'Розовый',
+            value: 'pink',
+          },
+          {
+            name: 'Фиолетовый',
+            value: 'purple',
+          },
+          {
+            name: 'Тёмно-красный',
+            value: 'darkred',
+          },
+          {
+            name: 'Оранжевый',
+            value: 'orange',
+          },
+          {
+            name: 'Зелёный',
+            value: 'green',
+          },
+          {
+            name: 'Тёмно-зелёный',
+            value: 'darkgreen',
+          },
+          {
+            name: 'Жёлтый',
+            value: 'yellow',
+          },
+          {
+            name: 'Тёмно-жёлтый',
+            value: '#576a00',
+          },
+        ],
+      },
+      {
+        name: 'completed',
+        label: 'Задачи в этой колонке в стадии:',
+        typeField: 'customSelectField',
+        titleList: 'Выбери стадию...',
+        options: [
+          {
+            name: 'Выполнено',
+            value: 'true',
+          },
+          {
+            name: 'Не выполнено',
+            value: 'false',
+          },
+        ],
+      },
+      {
+        name: 'title',
+        label: 'Название задачи',
+        typeField: 'textField',
+      },
+    ],
+    defaultState: {
+      columnName: 'Pending',
+      colorBadge: 'blue',
+      colorText: 'yellow',
+      title: 'I am new task',
+      completed: 'false',
+    },
+  },
+  addTask: {
+    title: 'Добавьте новую задачу',
+    btnTitle: 'Добавить задачу',
+    fields: [
+      {
+        name: 'title',
+        label: 'Название задачи',
+        typeField: 'textField',
+      },
+    ],
+    defaultState: {
+      title: '',
+    },
+  },
+};

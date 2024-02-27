@@ -1,5 +1,5 @@
 import getRandomNum from '../utils/getRandomNum';
-import { ITask } from '../utils/types';
+import { IColumn, IColumns, ITask } from '../utils/types';
 
 export const tasksService = {
   get: () =>
@@ -23,4 +23,11 @@ export const tasksService = {
           []
         );
       }),
+  create: function (payload: IColumn | IColumns | {id?: string, title: string}) {
+    return new Promise((resolve) => {
+      window.setTimeout(function () {
+        resolve(payload);
+      }, 0);
+    });
+  },
 };

@@ -2,8 +2,8 @@ import { Draggable, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ICard } from '../../utils/types';
 import { Avatar, Badge, Box, Flex, Icon, Text } from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
-import { CheckDouble } from '../../assets/icons/CheckDouble';
 import ProgressBar from './ProgressBar';
+import { CheckDouble } from '../../../assets/icons/CheckDouble';
 
 const container = {
   position: 'relative',

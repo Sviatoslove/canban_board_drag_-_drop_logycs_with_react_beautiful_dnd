@@ -3,7 +3,7 @@ import CircleIcon from "../common/CircleIcon";
 
 const Meetballs = () => {
   return ( 
-    <Flex>
+    <Flex >
       <CircleIcon boxSize={2} mr={'3px'}/>
       <CircleIcon boxSize={2} mr={'3px'}/>
       <CircleIcon boxSize={2}/>
