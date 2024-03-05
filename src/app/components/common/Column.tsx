@@ -64,7 +64,7 @@ const Column = ({
             bg={getBackgroundColor(snapshot)}
           >
             {tasks?.map((task, index) => (
-              <Card key={index} index={index} task={task} />
+              <Card key={index} index={index} task={task} columnId={id} />
             ))}
             {provided.placeholder}
             <Button

@@ -23,7 +23,7 @@ const menuButtonStyles = (
   colorText: string,
   colorBg: string,
   field: string
-  ) => {
+) => {
   switch (field) {
     case 'colorText': {
       return {
@@ -44,7 +44,7 @@ const menuButtonStyles = (
   }
 };
 
-const helpers = createMultiStyleConfigHelpers(['menuButton', 'menuItem']);
+const helpers = createMultiStyleConfigHelpers(['menuButton', 'menuItem', 'optionGroup', 'menu', 'menuDivider']);
 
 export const CustomSelectField = helpers.defineMultiStyleConfig({
   variants: {
@@ -54,7 +54,7 @@ export const CustomSelectField = helpers.defineMultiStyleConfig({
         maxW: '320px',
         w: '100%',
         borderRadius: 10,
-        mt:'4px',
+        mt: '4px',
         _hover: {
           shadow:
             '0px 0px 2px 2px rgba(0,0,0,0.3), 0px 0px 4px 4px rgba(0,0,0,0.3)',
@@ -63,15 +63,15 @@ export const CustomSelectField = helpers.defineMultiStyleConfig({
         ...menuButtonStyles(color, bg, name),
       },
       menuItem: {
-        borderRadius:10
+        borderRadius: 10,
       },
     }),
     titleColumn: ({ color, bg, name }: StyleFunctionProps) => ({
       menuButton: {
         shadow: '0px 0px 6px 1px rgba(0,0,0,0.3)',
         borderRadius: 10,
-        p:'5px',
-        ml:'auto',
+        p: '5px',
+        ml: 'auto',
         _hover: {
           shadow:
             '0px 0px 2px 2px rgba(0,0,0,0.3), 0px 0px 4px 4px rgba(0,0,0,0.3)',
@@ -79,7 +79,26 @@ export const CustomSelectField = helpers.defineMultiStyleConfig({
         ...menuButtonStyles(color, bg, name),
       },
       menuItem: {
-        borderRadius:10
+        borderRadius: 10,
+        bg:'transparent',
+        _focus: { bg: 'transparent' },
+        _hover:{bg:'#ffffff9e'}
+      },
+      optionGroup: {
+        textShadow:'1.5px 1.5px #00000063',
+        fontSize: '18px',
+        whiteSpace: 'nowrap'
+      },
+      menu: {
+        w:'fit-content',
+        borderRadius: 10,
+        bg:'#8080809e'
+      },
+      menuDivider: {
+        borderWidth:'2px',
+        w:'95%',
+        mx:"auto",
+        borderColor:'#ffffff9e',
       },
     }),
   },

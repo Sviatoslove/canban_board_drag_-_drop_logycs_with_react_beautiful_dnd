@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import Column from '../common/Column';
 import { useKanbanBoard } from '../../hooks/useKanbanBoard';
@@ -7,8 +7,6 @@ import { IColumn } from '../../utils/types';
 import EmptyTasksList from './EmptyTasksList';
 import { OpeningForm } from '../../context/useFormsTypes';
 import { useForms } from '../../context/useForms';
-import { useAppSelector } from '../../store/createStore';
-import { selectColumns } from '../../store/columnsSlice';
 
 const wrapper = {
   m: '10px auto',
@@ -34,7 +32,9 @@ const ColumnList = memo(
     ))
 );
 
-const KanbanBoard = ({userColumns}: {userColumns: IColumn[]}) => {
+const KanbanBoard = ({ userColumns }: { userColumns: IColumn[] }) => {
+  console.log('userColumns:', userColumns);
+  console.log('=================================================:');
   // const userTasks: IColumn[] = [
   //   // {
   //   //   id: '1',
@@ -81,15 +81,15 @@ const KanbanBoard = ({userColumns}: {userColumns: IColumn[]}) => {
   // ];
 
   const { openingForm } = useForms();
-  const { handleDragEnd, columns } = useKanbanBoard(userColumns);
+  const { handleDragEnd } = useKanbanBoard(userColumns);
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Flex sx={wrapper}>
-        {columns && userColumns.length ? (
+        {userColumns.length ? (
           <Flex sx={columnList}>
             <ColumnList
-              columns={Object.values(columns)}
+              columns={Object.values(userColumns)}
               openingForm={openingForm}
             />
           </Flex>

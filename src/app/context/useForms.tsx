@@ -6,14 +6,19 @@ import {
   OpeningForm,
 } from './useFormsTypes';
 import { createContext, useContext, useState } from 'react';
-import { EventClick, IColumn, IColumns } from '../utils/types';
+import { EventChange, EventClick, IColumn, IColumns } from '../utils/types';
 import { toastSettings } from '../utils/toastSettings';
 import {
   IDefaultState,
   formSettings,
 } from '../components/ui/forms/settingsForm';
 import { useAppDispatch, useAppSelector } from '../store/createStore';
-import { addColumn, addTask, selectColumns } from '../store/columnsSlice';
+import {
+  addColumn,
+  addTask,
+  editColumn,
+  selectColumns,
+} from '../store/columnsSlice';
 import { IFormsState } from '../hooks/useFormsData';
 import getRandomNum from '../utils/getRandomNum';
 
@@ -21,9 +26,11 @@ const defaultState = {
   isOpen: false,
   typeForm: {},
   onClose: () => {},
-  openingForm: (e: EventClick, id?: string) => {},
+  openingForm: (e: EventClick | EventChange, id?: string) => {},
   onToast: (type?: string) => {},
   onSubmit: (data: IFormsState, columnId?: string) => {},
+  closeOnSelect: {},
+  setCloseOnSelect: ()=> {},
 };
 
 const FormsContext = createContext<IFormsContext>(defaultState);
@@ -35,6 +42,10 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
   const storeColumns: IColumns = useAppSelector(selectColumns());
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [typeForm, setTypeForm] = useState<IDefaultState>({});
+  const [closeOnSelect, setCloseOnSelect] = useState<{ [x: string]: boolean }>(
+    {}
+    );
+
   const toast = useToast();
 
   const openingForm: OpeningForm = (e, id) => {
@@ -52,7 +63,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
   const onToast = (type?: string) => {
     if (isOpen) onClose();
     toast({
-      description: 'Отлично!',
+      description: 'Попробуйте добавить ещё задач.',
       status: 'success',
       variant: 'top-accent',
       isClosable: true,
@@ -62,15 +73,21 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
   };
 
   const onSubmit: OnsubmitFunc = ({ defaultState }, columnId) => {
-    const { columnName, colorBadge, colorText, title, completed } =
-      defaultState;
+    const {
+      columnName,
+      colorBadge,
+      colorText,
+      title,
+      completed: completedStore,
+    } = defaultState;
     let column: IColumn;
+    const completed = completedStore === 'false' ? false : true;
     const newTask = {
       completed: false,
       createdAt: Date.now(),
       problems: getRandomNum(50, 67),
       completedProblems: getRandomNum(0, 45),
-      status: columnName,
+      status: columnName || storeColumns[columnId!].title,
       id: Date.now().toString(),
       title,
       userId: '1',
@@ -82,7 +99,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           title: columnName,
           colorBadge,
           colorText,
-          completed: Boolean(completed),
+          completed,
           state: [newTask],
         };
         dispatch(addColumn(column!));
@@ -94,6 +111,16 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           state: [...storeColumns[columnId!].state, newTask],
         };
         dispatch(addTask(column!));
+        break;
+      }
+      case 'editColumn': {
+        column = {
+          ...storeColumns[columnId!],
+          colorBadge,
+          colorText,
+          completed,
+        };
+        dispatch(editColumn(column!));
         break;
       }
     }
@@ -110,6 +137,8 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         openingForm,
         onToast,
         onSubmit,
+        closeOnSelect,
+        setCloseOnSelect,
       }}
     >
       {children}

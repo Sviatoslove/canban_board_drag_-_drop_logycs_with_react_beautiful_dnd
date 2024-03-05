@@ -1,4 +1,10 @@
-import { Box, Button, Flex, Stack, useMultiStyleConfig } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Stack,
+  useMultiStyleConfig,
+} from '@chakra-ui/react';
 import { IStateProps, useFormsData } from '../../../hooks/useFormsData';
 import { validatorConfig } from '../../../utils/validator';
 import TextField from './TextField';
@@ -7,13 +13,20 @@ import CustomSelectField from './CustomSelectField';
 import { formSettings } from './settingsForm';
 import { menuItemStyles } from '../../../chakra/customSelectedFieldStyles';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { useAppSelector } from '../../../store/createStore';
+import { selectColumns } from '../../../store/columnsSlice';
 
 const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
   const { fields, btnTitle, defaultState } = formSettings[type];
+  const userColumns:any = useAppSelector(selectColumns());
+  const initialState =
+  typeof defaultState === 'function'
+  ? defaultState(userColumns[columnId])
+  : defaultState;
 
-  const useFormsDataProps: IStateProps = {
+  const useFormsDataProps: any = {
     state: {
-      defaultState,
+      defaultState: initialState,
       errors: validatorConfig,
     },
   };
@@ -30,7 +43,7 @@ const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
           {...register(name, label)}
           key={label + 10}
           placeholder={placeholder}
-          variant='form'
+          variant="form"
         />
       );
     },
@@ -50,7 +63,7 @@ const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
         bg={colorBadge}
         menuItemStyles={menuItemStyles}
         placeholder={placeholder}
-        variant='form'
+        variant="form"
         icon={<ChevronDownIcon />}
       />
     ),

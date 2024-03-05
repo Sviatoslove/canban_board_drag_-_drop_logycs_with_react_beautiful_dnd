@@ -62,7 +62,7 @@ export const counterSlice = createSlice({
       state.isLoading = false;
       state.dataLoaded = true;
     },
-    columnRenamed: (state, action) => {
+    columnEdited: (state, action) => {
       const { payload } = action;
       state.entities = { ...state.entities, [payload.id]: payload };
       state.isLoading = false;
@@ -84,7 +84,7 @@ export const {
   columnsReceived,
   columnsRequestedFailed,
   columnAdded,
-  columnRenamed,
+  columnEdited,
   taskAdded,
 } = actions;
 
@@ -110,13 +110,13 @@ export const addColumn =
     }
   };
 
-export const renameColumn =
+export const editColumn =
   (payload: { id?: string; title: string }) =>
   async (dispatch: AppDispatch) => {
     dispatch(columnsRequested());
     try {
       const data = await tasksService.create(payload);
-      dispatch(columnRenamed(data));
+      dispatch(columnEdited(data));
     } catch (error) {
       dispatch(columnsRequestedFailed(error));
     }

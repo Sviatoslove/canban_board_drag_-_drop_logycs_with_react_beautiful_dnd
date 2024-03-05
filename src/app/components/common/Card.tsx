@@ -4,6 +4,8 @@ import { Avatar, Badge, Box, Flex, Icon, Text } from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
 import ProgressBar from './ProgressBar';
 import { CheckDouble } from '../../../assets/icons/CheckDouble';
+import useRenameField from '../../hooks/useRenameField';
+import EditableField from './fields/EditableField';
 
 const container = {
   position: 'relative',
@@ -47,7 +49,16 @@ const getStyleDraggable = (
   background: snapshot.isDragging ? 'lightgreen' : 'white',
 });
 
-const Card = ({ task, index }: ICard) => {
+const Card = ({ task, index, columnId }: ICard) => {
+  const {
+    renameTitle,
+    handleRename,
+    refInput,
+    onSubmit,
+    handleAddColumn,
+    refSettingsColumn,
+  } = useRenameField();
+
   const getTitle = ({ title }: { title: string }) =>
     title.length <= 36 ? title : title.slice(0, 36) + '...';
 
@@ -65,9 +76,27 @@ const Card = ({ task, index }: ICard) => {
             ...provided.draggableProps.style,
           }}
         >
-          <Box fontSize={'14px'} fontWeight={'bold'} mb={'14px'}>
-            {getTitle(task)}
-          </Box>
+          {!renameTitle!.value ? (
+            <Box
+              fontSize={'14px'}
+              fontWeight={'bold'}
+              mb={'14px'}
+              onClick={handleRename}
+              style={{ cursor: 'text' }}
+            >
+              {renameTitle.title || getTitle(task)}
+            </Box>
+          ) : (
+            <EditableField
+              title={getTitle(task)}
+              name="taskName"
+              variant="titleColumn"
+              refDiv={refInput}
+              columnId={columnId}
+              taskIdx={index.toString()}
+              onSubmit={onSubmit}
+            />
+          )}
           <Flex sx={icons}>
             <Badge sx={badge} textTransform={'lowercase'}>
               {displayDate(task.createdAt)}

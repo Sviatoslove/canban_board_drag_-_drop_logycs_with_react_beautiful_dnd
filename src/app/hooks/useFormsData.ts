@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EventChange } from '../utils/types';
 
 export interface IFormsState {
@@ -27,14 +27,14 @@ const useFormsData = ({ state }: IStateProps) => {
   const [data, setData] = useState<IFormsState>(state);
   const errors: IErrors = { fields: {}, isValid: false };
 
-  const register = (field: string, label?:string) => ({
+  const register = (field: string, label?: string) => ({
     name: field,
     value: data.defaultState[field],
     label,
     error: errors.fields[field],
 
     onChange: (e: EventChange) => {
-      const { target }:any = e;
+      const { target }: any = e;
       return setData((prevState) => ({
         ...prevState,
         defaultState: { ...prevState.defaultState, [field]: target.value },
@@ -68,7 +68,7 @@ const useFormsData = ({ state }: IStateProps) => {
         break;
       }
       case 'minBalance': {
-          errors.isValid = +value < +data.errors[fieldName][validateMethod].value;
+        errors.isValid = +value < +data.errors[fieldName][validateMethod].value;
         break;
       }
       default:
@@ -85,9 +85,13 @@ const useFormsData = ({ state }: IStateProps) => {
   }
 
   const handleSubmit =
-    (onSubmit: (data: IFormsState, columnId?:string) => void, columnId?:string) => (e: React.FormEvent) => {
+    (
+      onSubmit: (data: IFormsState, columnId?: string, taskId?: string) => void,
+      columnId?: string, taskId?: string
+    ) =>
+    (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit(data, columnId);
+      onSubmit(data, columnId, taskId);
     };
 
   return { register, data, handleSubmit, errors };

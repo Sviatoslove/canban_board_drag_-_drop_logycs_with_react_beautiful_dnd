@@ -11,12 +11,22 @@ export interface IFields {
   titleList?: string;
 }
 
+export type DefaultStateFunc = ({
+  colorBadge,
+  colorText,
+  completed,
+}: {
+  colorBadge: string;
+  colorText: string;
+  completed: string;
+}) => {};
+
 interface IFormSettings {
   [key: string]: {
     title: string;
     btnTitle: string;
     fields: IFields[];
-    defaultState: IDefaultState;
+    defaultState: IDefaultState | DefaultStateFunc;
   };
 }
 
@@ -69,7 +79,77 @@ export const colorsBadge = [
     name: 'Тёмно-жёлтый',
     value: '#576a00',
   },
-]
+];
+
+export const colorsText = [
+  {
+    name: 'Белый',
+    value: 'white',
+  },
+  {
+    name: 'Чёрный',
+    value: 'black',
+  },
+  {
+    name: 'Серый',
+    value: 'grey',
+  },
+  {
+    name: 'Красный',
+    value: 'red',
+  },
+  {
+    name: 'Синий',
+    value: 'blue',
+  },
+  {
+    name: 'Тёмно-синий',
+    value: 'darkblue',
+  },
+  {
+    name: 'Розовый',
+    value: 'pink',
+  },
+  {
+    name: 'Фиолетовый',
+    value: 'purple',
+  },
+  {
+    name: 'Тёмно-красный',
+    value: 'darkred',
+  },
+  {
+    name: 'Оранжевый',
+    value: 'orange',
+  },
+  {
+    name: 'Зелёный',
+    value: 'green',
+  },
+  {
+    name: 'Тёмно-зелёный',
+    value: 'darkgreen',
+  },
+  {
+    name: 'Жёлтый',
+    value: 'yellow',
+  },
+  {
+    name: 'Тёмно-жёлтый',
+    value: '#576a00',
+  },
+];
+
+const completed = [
+  {
+    name: 'Выполнено',
+    value: 'true',
+  },
+  {
+    name: 'Не выполнено',
+    value: 'false',
+  },
+];
 
 export const formSettings: IFormSettings = {
   addColumn: {
@@ -95,80 +175,14 @@ export const formSettings: IFormSettings = {
         typeField: 'customSelectField',
         placeholder: 'Выбери цвет...',
         titleList: 'Выбери цвет текста заголовка...',
-        options: [
-          {
-            name: 'Белый',
-            value: 'white',
-          },
-          {
-            name: 'Чёрный',
-            value: 'black',
-          },
-          {
-            name: 'Серый',
-            value: 'grey',
-          },
-          {
-            name: 'Красный',
-            value: 'red',
-          },
-          {
-            name: 'Синий',
-            value: 'blue',
-          },
-          {
-            name: 'Тёмно-синий',
-            value: 'darkblue',
-          },
-          {
-            name: 'Розовый',
-            value: 'pink',
-          },
-          {
-            name: 'Фиолетовый',
-            value: 'purple',
-          },
-          {
-            name: 'Тёмно-красный',
-            value: 'darkred',
-          },
-          {
-            name: 'Оранжевый',
-            value: 'orange',
-          },
-          {
-            name: 'Зелёный',
-            value: 'green',
-          },
-          {
-            name: 'Тёмно-зелёный',
-            value: 'darkgreen',
-          },
-          {
-            name: 'Жёлтый',
-            value: 'yellow',
-          },
-          {
-            name: 'Тёмно-жёлтый',
-            value: '#576a00',
-          },
-        ],
+        options: colorsText,
       },
       {
         name: 'completed',
         label: 'Задачи в этой колонке в стадии:',
         typeField: 'customSelectField',
         titleList: 'Выбери стадию...',
-        options: [
-          {
-            name: 'Выполнено',
-            value: 'true',
-          },
-          {
-            name: 'Не выполнено',
-            value: 'false',
-          },
-        ],
+        options: completed,
       },
       {
         name: 'title',
@@ -196,6 +210,39 @@ export const formSettings: IFormSettings = {
     ],
     defaultState: {
       title: '',
+    },
+  },
+  editColumn: {
+    title: 'Изменение колонки',
+    btnTitle: 'Изменить колонку',
+    fields: [
+      {
+        name: 'colorBadge',
+        label: 'Стилизуй заголовок колонки',
+        typeField: 'customSelectField',
+        placeholder: 'Выбери цвет...',
+        titleList: 'Выбери цвет фона заголовка...',
+        options: colorsBadge,
+      },
+      {
+        name: 'colorText',
+        label: 'Выберите цвет текста заголовка колонки',
+        typeField: 'customSelectField',
+        placeholder: 'Выбери цвет...',
+        titleList: 'Выбери цвет текста заголовка...',
+        options: colorsText,
+      },
+      {
+        name: 'completed',
+        label: 'Задачи в этой колонке в стадии:',
+        typeField: 'customSelectField',
+        titleList: 'Выбери стадию...',
+        options: completed,
+      },
+    ],
+    defaultState: (column) => {
+      const { colorBadge, colorText, completed } = column;
+      return { colorBadge, colorText, completed: completed.toString() };
     },
   },
 };

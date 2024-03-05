@@ -43,6 +43,7 @@ export interface ITitleColumn {
 export interface ICard {
   task: ITask;
   index: number;
+  columnId: string;
 }
 
 export interface ISource {

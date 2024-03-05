@@ -21,6 +21,7 @@ interface ISelectFieldProps {
   label?: string;
   error?: string;
   options: IDefaultState[];
+  optionsGroup?: IDefaultState[];
   color?: string;
   onChange?: (e: EventChange, field?: string) => void;
   onClick?: (e: EventChange) => void;
@@ -31,7 +32,14 @@ interface ISelectFieldProps {
   titleList?: string;
   menuItemStyles?: any;
   variant?: string;
-  menuOption?: boolean;
+  menuOption?: {
+    title: string;
+    options: IDefaultState[];
+    closeOnSelect: { [x: string]: boolean };
+    setCloseOnSelect: any;
+    refSettingsColumn: any;
+    columnId?: string;
+  };
   wrapperStyles?: IDefaultState;
   icon?: ReactElement<any, string | JSXElementConstructor<any>> | undefined;
 }
@@ -52,7 +60,7 @@ const CustomSelectField = ({
   icon,
   variant,
   wrapperStyles,
-  menuOption
+  menuOption,
 }: ISelectFieldProps) => {
   const styles = useMultiStyleConfig('CustomSelectField', {
     variant,
@@ -64,15 +72,35 @@ const CustomSelectField = ({
   const getTitle = () =>
     options[options.findIndex((item) => item.value === value)].name;
 
+  const handleOpenMenu = () => {
+    menuOption?.setCloseOnSelect((prev: any) =>
+      Object.keys(prev).reduce(
+        (acc, item) =>
+          (acc = {
+            ...acc,
+            [item]: item === menuOption.columnId! ? !prev[item] : false,
+          }),
+        {}
+      )
+    );
+  };
+
   return (
     <FormControl isInvalid={!!error} mt={2} sx={wrapperStyles}>
       <label htmlFor={name}>{label}</label>
-      <Menu>
-        <MenuButton __css={styles.menuButton} as={Button}>
+      <Menu
+        isOpen={menuOption?.closeOnSelect[menuOption.columnId!]}
+        closeOnSelect={!menuOption || false}
+      >
+        <MenuButton
+          __css={styles.menuButton}
+          as={Button}
+          onClick={handleOpenMenu}
+        >
           {value ? getTitle() : placeholder}
           {icon}
         </MenuButton>
-        <MenuList w={'320px'} p={0}>
+        <MenuList w={'320px'} p={0} sx={styles.menu}>
           <MenuGroup title={titleList} display={'flex'}>
             {options?.map((item, idx) => (
               <MenuItem
@@ -94,11 +122,22 @@ const CustomSelectField = ({
           </MenuGroup>
           {menuOption && (
             <>
-              <MenuDivider />
-              <MenuOptionGroup title="Country" type="checkbox">
-                <MenuItemOption value="email">Email</MenuItemOption>
-                <MenuItemOption value="phone">Phone</MenuItemOption>
-                <MenuItemOption value="country">Country</MenuItemOption>
+              <MenuDivider sx={styles.menuDivider} />
+              <MenuOptionGroup
+                title={menuOption.title}
+                type="checkbox"
+                sx={styles.optionGroup}
+              >
+                {menuOption.options?.map((item, idx) => (
+                  <MenuItemOption
+                    sx={styles.menuItem}
+                    value={item.value}
+                    key={idx}
+                    ref={menuOption.refSettingsColumn}
+                  >
+                    {item.name}
+                  </MenuItemOption>
+                ))}
               </MenuOptionGroup>
             </>
           )}

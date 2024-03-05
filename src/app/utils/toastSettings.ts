@@ -1,13 +1,12 @@
-import { IDefaultState } from "../components/ui/forms/settingsForm"
+import { IDefaultState } from '../components/ui/forms/settingsForm';
 
 interface IToastSettings {
-  [x:string]: IDefaultState
+  [x: string]: IDefaultState;
 }
 
 export const toastSettings: IToastSettings = {
   addColumn: {
     title: 'Была создана новая колонка и задача!',
-    description: 'Попробуйте добавить ещё задач.',
   },
   addTask: {
     title: 'Была добавлена новая задача!',
@@ -15,6 +14,14 @@ export const toastSettings: IToastSettings = {
   },
   addColumnAuto: {
     title: 'Была создана новая колонка!',
-    description: 'Попробуйте добавить ещё задач.',
-  }
-}
+  },
+  editColumn: {
+    title: 'Колонка была изменена!',
+  },
+  editColumnTitle: {
+    title: 'Заголовок колонки успешно изменен!',
+  },
+  editTaskTitle: {
+    title: 'Заголовок задачи успешно изменен!',
+  },
+};

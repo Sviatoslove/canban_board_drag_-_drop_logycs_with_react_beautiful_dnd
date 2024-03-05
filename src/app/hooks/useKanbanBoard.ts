@@ -97,11 +97,10 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
       goScript = ({ index, state, setState }: IGoScriptSetnewState) =>
         destinationReform(destinationIndex!, state, setState, index);
     } else if (action === 'destination') {
-      let completed: boolean = false;
-      if (columns[droppableId].completed)
-        completed = columns[droppableId].completed!;
+      const completed: boolean = columns[droppableId].completed!;
+      const status: string = columns[droppableId].title;
       goScript = ({ index, state, setState, task }: IGoScriptSetnewState) =>
-        destinationReform(index, state, setState, undefined, completed, task);
+        destinationReform(index, state, setState, undefined, completed, status, task);
     }
     goScript({
       index,
@@ -117,13 +116,14 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
     setState: setState,
     sourceIndex?: number,
     completed?: boolean,
+    status?: string,
     task?: ITask
   ) {
     let updatedTask: any;
     if (sourceIndex !== undefined) {
       updatedTask = state[sourceIndex];
       state.splice(sourceIndex, 1);
-    } else updatedTask = { ...task, completed }; //status?
+    } else updatedTask = { ...task, completed, status }; //status?
     if (index === 0) {
       state.unshift(updatedTask);
     } else state.splice(index, 0, updatedTask);
