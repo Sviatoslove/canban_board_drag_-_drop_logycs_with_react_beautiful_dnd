@@ -24,4 +24,8 @@ export const toastSettings: IToastSettings = {
   editTaskTitle: {
     title: 'Заголовок задачи успешно изменен!',
   },
+  removeColumn: {
+    title: 'Колонка и все её задачи успешно удалены!',
+    status: 'warning'
+  },
 };

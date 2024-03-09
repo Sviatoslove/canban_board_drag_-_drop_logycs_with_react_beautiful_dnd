@@ -19,7 +19,7 @@ export const validatorConfig = {
       message: 'Чтобы продолжить выберите цвет',
     },
   },
-  title: {
+  taskName: {
     isRequired: {
       message: 'Обязательно для заполнения',
     },

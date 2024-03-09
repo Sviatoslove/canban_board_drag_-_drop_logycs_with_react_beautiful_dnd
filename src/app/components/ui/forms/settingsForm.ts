@@ -185,7 +185,7 @@ export const formSettings: IFormSettings = {
         options: completed,
       },
       {
-        name: 'title',
+        name: 'taskName',
         label: 'Название задачи',
         typeField: 'textField',
       },
@@ -194,7 +194,7 @@ export const formSettings: IFormSettings = {
       columnName: 'Pending',
       colorBadge: 'blue',
       colorText: 'yellow',
-      title: 'I am new task',
+      taskName: 'I am new task',
       completed: 'false',
     },
   },
@@ -244,5 +244,12 @@ export const formSettings: IFormSettings = {
       const { colorBadge, colorText, completed } = column;
       return { colorBadge, colorText, completed: completed.toString() };
     },
+  },
+  removeColumn: {
+    title: 'Вы уверены, что хотите удалить колонку и все задачи, которые находятся в ней?',
+    btnTitle: 'Удалить колонку',
+    fields: [
+    ],
+    defaultState: {},
   },
 };

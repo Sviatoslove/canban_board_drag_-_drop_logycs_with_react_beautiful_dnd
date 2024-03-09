@@ -15,54 +15,71 @@ const badgeTitle = (colorBadge?: string, color?: string) => ({
   color: color,
   textTransform: 'none',
   cursor: 'default',
+  maxW:'270px',
+  whiteSpace: 'wrap'
 });
 
 const TitleColumn = ({ colorBadge, title, color, columnId }: ITitleColumn) => {
   const {
     renameTitle,
+    editedTitle,
     handleRename,
     refInput,
-    onSubmit,
+    onSubmitRename,
     handleAddColumn,
-    refSettingsColumn
+    refSettingsColumn,
   } = useRenameField();
-  const {closeOnSelect, setCloseOnSelect} = useForms()
+  const { closeOnSelect, setCloseOnSelect } = useForms();
 
   return (
     <Flex alignItems={'center'} justifyContent={'space-between'} mb={'19px'}>
-      {!renameTitle!.value ? (
+      {!renameTitle ? (
         <Badge
           sx={badgeTitle(colorBadge, color)}
           onClick={handleRename}
           style={{ cursor: 'text' }}
         >
-          {renameTitle.title || title}
+          {editedTitle || title}
         </Badge>
       ) : (
         <EditableField
-          title={title}
+          title={editedTitle || title}
           name="columnName"
-          variant="titleColumn"
-          refDiv={refInput}
+          settings={{
+            placeholder: 'Введите имя колонки',
+            refDiv: refInput,
+            variant: 'titleColumn',
+          }}
           columnId={columnId}
-          onSubmit={onSubmit}
+          onSubmit={onSubmitRename}
         />
       )}
-        <CustomSelectField
-          icon={<Meetballs />}
-          name="menuColumn"
-          placeholder={null}
-          options={[
-            { name: 'Добавить колонку', value: 'addColumnAuto' },
-            { name: 'Изменить колонку', value: 'editColumn' },
-          ]}
-          onClick={(e) => handleAddColumn(e, columnId)}
-          variant="titleColumn"
-          wrapperStyles={{ m: '0px 3px 0 auto', w: 'fit-content' }}
-
-          menuOption={{title: 'Настройки при добавлении колонки', options:[{name: 'Задачи в новой колонке в стадии выполнено', value:'false'}],
-          closeOnSelect, setCloseOnSelect, refSettingsColumn, columnId}}
-        />
+      <CustomSelectField
+        icon={<Meetballs />}
+        name="menuColumn"
+        placeholder={null}
+        options={[
+          { name: 'Добавить колонку', value: 'addColumnAuto' },
+          { name: 'Изменить колонку', value: 'editColumn' },
+          { name: 'Удалить колонку', value: 'removeColumn' },
+        ]}
+        onClick={(e) => handleAddColumn(e, columnId)}
+        variant="titleColumn"
+        wrapperStyles={{ m: '0px 3px 0 auto', w: 'fit-content' }}
+        menuOption={{
+          title: 'Настройки при добавлении колонки',
+          options: [
+            {
+              name: 'Задачи в новой колонке в стадии выполнено',
+              value: 'false',
+            },
+          ],
+          closeOnSelect,
+          setCloseOnSelect,
+          refSettingsColumn,
+          columnId,
+        }}
+      />
     </Flex>
   );
 };

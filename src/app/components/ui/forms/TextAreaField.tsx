@@ -3,14 +3,16 @@ import {
   FormErrorMessage,
   Input,
   Text,
+  Textarea,
   useMultiStyleConfig,
 } from '@chakra-ui/react';
+import { EventChange } from '../../../utils/types';
 
 interface ITextfieldProps {
   name: string;
   value: string;
   label?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: EventChange) => void;
   error?: string;
   placeholder?: string;
   variant?: string;
@@ -18,7 +20,7 @@ interface ITextfieldProps {
   // selectCategory: string;
 }
 
-const TextField = ({
+const TextAreaField = ({
   name,
   label,
   value,
@@ -42,7 +44,7 @@ const TextField = ({
     <>
       <FormControl isInvalid={!!error}>
         <Text>{label}</Text>
-        <Input
+        <Textarea
           id={name}
           name={name}
           value={value}
@@ -50,7 +52,7 @@ const TextField = ({
           onClick={cleanInput}
           size="sm"
           placeholder={placeholder}
-          sx={styles.input}
+          sx={styles.area}
           ref={refDiv}
         />
         {!!error && (
@@ -63,4 +65,4 @@ const TextField = ({
   );
 };
 
-export default TextField;
+export default TextAreaField;

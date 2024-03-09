@@ -1,29 +1,54 @@
 import { useRef, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/createStore';
 import { OnsubmitFunc } from '../context/useFormsTypes';
-import { addColumn, editColumn, selectColumns } from '../store/columnsSlice';
 import { EventChange, EventClick, IColumn, IColumns } from '../utils/types';
 import { colorsBadge } from '../components/ui/forms/settingsForm';
 import getRandomNum from '../utils/getRandomNum';
 import { useForms } from '../context/useForms';
+import localStorageService from '../services/localStorage.service';
+import { updateStateAndLocalSt } from '../utils/updateStateAndLocalSt';
+import { orderingColumns } from '../utils/orderingColumns';
 
 const useRenameField = () => {
-  const dispatch = useAppDispatch();
-  const storeColumns: IColumns = useAppSelector(selectColumns());
-  const { onToast } = useForms();
-  const [renameTitle, setRenameTitle] = useState<{
-    title: string;
-    value: boolean;
-  }>({ title: '', value: false });
-
-  const { openingForm, setCloseOnSelect } = useForms();
+  const storeColumns: IColumns = localStorageService.getColumns();
+  const { onToast, openingForm, setCloseOnSelect, setUpdateColumns } =
+    useForms();
+  const [editedTitle, setEditedTitle] = useState<string>('');
+  const [renameTitle, setRenameTitle] = useState<boolean>(false);
 
   const refInput = useRef<any>();
   const refSettingsColumn = useRef<any>();
 
   const handleAddColumn = (e: EventChange | EventClick, columnId?: string) => {
     const { target }: any = e;
+    const HTMLColumnList = target.closest('.columnList');
     const type = target.closest('button')?.getAttribute('datatype');
+    if (type === 'addTask') {
+      const store: IColumns = localStorageService.getColumns();
+      const newTask = {
+        completed: false,
+        createdAt: Date.now(),
+        problems: getRandomNum(50, 67),
+        completedProblems: getRandomNum(0, 45),
+        status: store[columnId!]?.title,
+        id: Date.now().toString(),
+        title: '',
+        userId: '1',
+      };
+      const column = {
+        ...store[+columnId!],
+        state: [...store[+columnId!].state, newTask!],
+      };
+      const numTask = store[columnId!].state.length;
+      if (numTask > 4)
+        setTimeout(()=>{
+          HTMLColumnList?.childNodes[+columnId!-1]?.childNodes[1]?.childNodes[
+            numTask
+          ]?.scrollIntoView();
+        }, 10)
+      updateStateAndLocalSt(setUpdateColumns, column);
+      onToast(type);
+      return;
+    }
     const completed =
       refSettingsColumn.current.getAttribute('aria-checked') === 'true'
         ? true
@@ -37,52 +62,73 @@ const useRenameField = () => {
       completed,
       state: [],
     };
-
     if (type === 'addColumnAuto') {
+      let newColumns: IColumns;
+      if (Object.values(storeColumns).length > +columnId!) {
+        const arr = Object.values(storeColumns);
+        arr.splice(+columnId!, 0, newColumn);
+        newColumns = orderingColumns(arr);
+      } else {
+        newColumns = { ...storeColumns, [id]: newColumn };
+      }
       onToast(type);
-      dispatch(addColumn(newColumn));
+      updateStateAndLocalSt(setUpdateColumns, newColumn, newColumns);
+      setTimeout(() => {
+        HTMLColumnList.childNodes[+columnId!].scrollIntoView();
+      }, 10);
     }
-    if (type === 'editColumn') openingForm(e, columnId);
-    setCloseOnSelect((prev:any)=>({...prev, [columnId!]: false}));
+    if (type === 'editColumn' || type === 'removeColumn')
+      openingForm(e, columnId);
+    setCloseOnSelect((prev: any) => ({ ...prev, [columnId!]: false }));
   };
 
-  const handleRename = () => {
-    setTimeout(() => {
-      refInput.current.focus();
-      refInput.current.onblur = function () {
-        setTimeout(() => setRenameTitle({ title: '', value: false }), 0);
-      };
-    }, 0);
-    setRenameTitle((prev) => ({ title: '', value: !prev.value }));
-  };
+  function handleRename() {
+    const getFocus=()=> {
+      refInput.current?.focus();
+      if (refInput.current) {
+        refInput.current.onblur = function () {
+          if(refInput.current?.value.length < 2) getFocus()
+          else setTimeout(() => setRenameTitle(false), 0);
+        };
+      }
+    }
+    setTimeout(() => getFocus(), 10);
+    setRenameTitle(true);
+  }
 
-  const onSubmit: OnsubmitFunc = ({ defaultState }, columnId, taskIdx) => {
+  const onSubmitRename: OnsubmitFunc = (
+    { defaultState },
+    columnId,
+    taskIdx
+  ) => {
     const { columnName, taskName } = defaultState;
-    let renameSettings:any = {value: false}
-    let newColumn:any
-    if(columnName) {
-      renameSettings.title = columnName
-      newColumn = { ...storeColumns[columnId!], title: columnName }
-      onToast('editColumnTitle')
-    }else {
-      renameSettings.title = taskName
-      const newState = [...storeColumns[columnId!].state]
-      const newTask = {...newState[+taskIdx!], title: taskName}
-      newState.splice(+taskIdx!, 1, newTask)
-      newColumn = { ...storeColumns[columnId!], state: newState }
-      onToast('editTaskTitle')
+    let title: string;
+    let newColumn: IColumn;
+    if (columnName) {
+      title = columnName;
+      newColumn = { ...storeColumns[columnId!], title: columnName };
+      onToast('editColumnTitle');
+    } else {
+      title = taskName;
+      const newState = [...storeColumns[columnId!].state];
+      const newTask = { ...newState[+taskIdx!], title: taskName };
+      newState.splice(+taskIdx!, 1, newTask);
+      newColumn = { ...storeColumns[columnId!], state: newState };
+      onToast('editTaskTitle');
     }
-    setRenameTitle(renameSettings);
-    dispatch(editColumn(newColumn));
+    setEditedTitle(title);
+    updateStateAndLocalSt(setUpdateColumns, newColumn);
+    setRenameTitle(false);
+    setTimeout(() => setEditedTitle(''), 0);
   };
 
   return {
     renameTitle,
+    editedTitle,
     handleRename,
     refInput,
-    onSubmit,
+    onSubmitRename,
     handleAddColumn,
-    setRenameTitle,
     refSettingsColumn,
   };
 };

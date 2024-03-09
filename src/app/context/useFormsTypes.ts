@@ -1,6 +1,7 @@
 import { IDefaultState } from '../components/ui/forms/settingsForm';
-import { EventChange, EventClick, FuncVoid } from '../utils/types';
+import { EventChange, EventClick, FuncVoid, IColumns, ITask, SetStateColumns } from '../utils/types';
 import { IFormsState } from '../hooks/useFormsData';
+import { MutableRefObject } from 'react';
 
 type IsOpen = boolean;
 
@@ -18,11 +19,14 @@ export type OpeningForm = (e: EventClick | EventChange, id?: string) => void;
 
 export interface IFormsContext {
   isOpen: IsOpen;
-  typeForm: IDefaultState;
+  typeForm: MutableRefObject<IDefaultState>;
   onClose: FuncVoid;
   openingForm: OpeningForm;
   onToast: (type?: string) => void;
   onSubmit: OnsubmitFunc;
   closeOnSelect: { [x: string]: boolean };
   setCloseOnSelect: any;
+  updateColumns: IColumns;
+  setUpdateColumns:SetStateColumns
+  handleDragEnd: any
 }

@@ -1,8 +1,5 @@
-import { setState } from './../utils/types';
-import { useState, useEffect } from 'react';
+import { SetStateColumns, SetStateTasks } from './../utils/types';
 import {
-  HandleAddTask,
-  IColumn,
   IColumns,
   IGoScriptReformPreviousState,
   IGoScriptSetnewState,
@@ -11,38 +8,14 @@ import {
   TasksList,
 } from '../utils/types';
 import { DropResult } from 'react-beautiful-dnd';
-import { initialStateTasks } from '../utils/initialStateTasks';
-import { useAppDispatch } from '../store/createStore';
-import { saveColumns } from '../store/columnsSlice';
+import { setState } from '../utils/initialStateTasks';
+import localStorageService from '../services/localStorage.service';
 
-export const useKanbanBoard = (userColumns?: IColumn[]) => {
-  const dispatch = useAppDispatch();
-  const [columns, setColumns] = useState<IColumns>({});
+export const useKanbanBoard = (updateColumns:IColumns, setUpdateColumns:SetStateColumns) => {
 
-  useEffect(() => {
-    if (userColumns && userColumns.length) {
-      // let completed: TasksList = [];
-      // let uncompleted: TasksList = [];
-      // tasksService.get().then((res) => {
-      //   res.forEach((item: ITask) =>
-      //     item.completed ? completed.push(item) : uncompleted.push(item)
-      //   );
-
-      //   setColumns(
-      //     initialStateTasks(userColumns, setColumns, completed, uncompleted)
-      //   );
-      // });
-      setColumns(initialStateTasks(userColumns, setColumns));
-    }
-  }, [userColumns]);
-
-  const updateStore = () => {
-    setColumns((prevState) => {
-      const data = { ...prevState };
-      Object.values(data).forEach((column) => {
-        delete column.setState;
-      });
-      dispatch(saveColumns(data));
+  const updateLocalStorage = () => {
+    setUpdateColumns((prevState) => {
+      localStorageService.setColumns(prevState);
       return prevState;
     });
   };
@@ -52,7 +25,7 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
     if (!destination || source.droppableId === destination.droppableId) {
       if (source.index >= 0 && destination?.index !== undefined) {
         setNewState(source, 'source', destination.index);
-        updateStore();
+        setTimeout(() => updateLocalStorage(), 10);
       } else return;
       return;
     }
@@ -62,7 +35,7 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
     const task = reformPreviousState(source.droppableId, draggableId, 'find');
 
     setNewState(destination, 'destination', undefined, task);
-    updateStore();
+    setTimeout(() => updateLocalStorage(), 10);
   };
 
   function reformPreviousState(
@@ -80,8 +53,8 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
     }
     return goScript({
       taskId,
-      state: columns[sourceDroppableId].state,
-      setState: columns[sourceDroppableId].setState,
+      state: updateColumns[sourceDroppableId].state,
+      setState: (state: TasksList) => setState(state, sourceDroppableId, setUpdateColumns)
     });
   }
 
@@ -97,15 +70,23 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
       goScript = ({ index, state, setState }: IGoScriptSetnewState) =>
         destinationReform(destinationIndex!, state, setState, index);
     } else if (action === 'destination') {
-      const completed: boolean = columns[droppableId].completed!;
-      const status: string = columns[droppableId].title;
+      const completed: boolean = updateColumns[droppableId].completed!;
+      const status: string = updateColumns[droppableId].title;
       goScript = ({ index, state, setState, task }: IGoScriptSetnewState) =>
-        destinationReform(index, state, setState, undefined, completed, status, task);
+        destinationReform(
+          index,
+          state,
+          setState,
+          undefined,
+          completed,
+          status,
+          task
+        );
     }
     goScript({
       index,
-      state: [...columns[droppableId].state],
-      setState: columns[droppableId].setState,
+      state: [...updateColumns[droppableId].state],
+      setState: (state: TasksList) => setState(state, droppableId, setUpdateColumns),
       task,
     });
   }
@@ -113,7 +94,7 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
   function destinationReform(
     index: number,
     state: ITask[],
-    setState: setState,
+    setState: SetStateTasks,
     sourceIndex?: number,
     completed?: boolean,
     status?: string,
@@ -140,6 +121,5 @@ export const useKanbanBoard = (userColumns?: IColumn[]) => {
 
   return {
     handleDragEnd,
-    columns,
   };
 };

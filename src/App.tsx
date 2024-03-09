@@ -5,19 +5,29 @@ import FormsLayout from './app/layouts/FormsLayout';
 import { useAppSelector } from './app/store/createStore';
 import { selectColumns } from './app/store/columnsSlice';
 import { theme } from './app/chakra/initialThemes';
+import { useEffect } from 'react';
+import localStorageService from './app/services/localStorage.service';
+import AppLoader from './app/components/ui/hoc/AppLoader';
 
 const App = () => {
   const storeColumns = useAppSelector(selectColumns());
   const userColumns = Object.values(storeColumns);
+
+  useEffect(() => {
+    if (userColumns.length) localStorageService.setColumns(storeColumns);
+  }, [storeColumns]);
+
   return (
     <ChakraProvider
       toastOptions={{ defaultOptions: { position: 'bottom-right' } }}
       theme={theme}
     >
-      <FormsProvider>
-        <KanbanBoard userColumns={userColumns} />
-        <FormsLayout/>
-      </FormsProvider>
+      <AppLoader>
+        <FormsProvider>
+          <KanbanBoard userColumns={storeColumns} />
+          <FormsLayout />
+        </FormsProvider>
+      </AppLoader>
     </ChakraProvider>
   );
 };

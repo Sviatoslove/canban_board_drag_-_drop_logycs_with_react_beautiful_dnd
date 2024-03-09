@@ -29,8 +29,9 @@ export type FuncVoid = () => void;
 
 export interface IColumn extends IUserTask {
   state: TasksList;
-  setState?: setState;
-  openingForm?: OpeningForm
+  setState?: SetStateTasks;
+  openingForm?: any
+  // openingForm?: OpeningForm
 }
 
 export interface ITitleColumn {
@@ -55,18 +56,20 @@ export interface IColumns {
   [x: string]: IColumn;
 }
 
-export type setState = Dispatch<SetStateAction<TasksList>>;
+export type SetStateTasks = Dispatch<SetStateAction<TasksList>> 
+
+export type SetStateColumns = Dispatch<SetStateAction<IColumns>> ;
 
 export interface IGoScriptReformPreviousState {
   taskId: string;
   state: ITask[];
-  setState?: setState;
+  setState?: SetStateTasks;
 }
 
 export interface IGoScriptSetnewState {
   index: number;
   state: ITask[];
-  setState: setState;
+  setState: SetStateTasks;
   task?: ITask;
 }
 
@@ -84,7 +87,8 @@ export type EventChange =
   | React.ChangeEvent
   | React.MouseEvent<HTMLInputElement | HTMLSelectElement>
   | FormEvent<HTMLDivElement>
-  | FormEvent<HTMLButtonElement>;
+  | FormEvent<HTMLButtonElement>
+  | React.ChangeEventHandler<HTMLTextAreaElement>;
 
   export interface IFieldsProps {
     name: string;

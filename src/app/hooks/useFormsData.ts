@@ -60,17 +60,6 @@ const useFormsData = ({ state }: IStateProps) => {
           value.length < +data.errors[fieldName][validateMethod].length;
         break;
       }
-      case 'isContainDigit': {
-        let digitRegExp;
-        if (fieldName === 'password') digitRegExp = /\d+/g;
-        else digitRegExp = /^\d+$/;
-        errors.isValid = !digitRegExp.test(value);
-        break;
-      }
-      case 'minBalance': {
-        errors.isValid = +value < +data.errors[fieldName][validateMethod].value;
-        break;
-      }
       default:
         break;
     }
@@ -91,6 +80,7 @@ const useFormsData = ({ state }: IStateProps) => {
     ) =>
     (e: React.FormEvent) => {
       e.preventDefault();
+      if(Object.values(errors.fields).length)return
       onSubmit(data, columnId, taskId);
     };
 

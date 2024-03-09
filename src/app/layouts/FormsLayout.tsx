@@ -4,7 +4,7 @@ import { useForms } from '../context/useForms';
 
 const FormsLayout = () => {
   const { typeForm, isOpen, onClose, onSubmit } = useForms();
-  const { title, type, columnId } = typeForm;
+  const { title, type, columnId } = typeForm.current;
 
   return (
     <ModalWindow {...{ title, isOpen, onClose }}>

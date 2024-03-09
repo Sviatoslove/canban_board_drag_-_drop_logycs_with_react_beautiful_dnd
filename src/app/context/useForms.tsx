@@ -5,32 +5,38 @@ import {
   OnsubmitFunc,
   OpeningForm,
 } from './useFormsTypes';
-import { createContext, useContext, useState } from 'react';
-import { EventChange, EventClick, IColumn, IColumns } from '../utils/types';
+import { createContext, useContext, useRef, useState } from 'react';
+import {
+  EventChange,
+  EventClick,
+  IColumn,
+  IColumns,
+  ITask,
+} from '../utils/types';
 import { toastSettings } from '../utils/toastSettings';
 import {
   IDefaultState,
   formSettings,
 } from '../components/ui/forms/settingsForm';
-import { useAppDispatch, useAppSelector } from '../store/createStore';
-import {
-  addColumn,
-  addTask,
-  editColumn,
-  selectColumns,
-} from '../store/columnsSlice';
 import { IFormsState } from '../hooks/useFormsData';
 import getRandomNum from '../utils/getRandomNum';
+import { orderingColumns } from '../utils/orderingColumns';
+import localStorageService from '../services/localStorage.service';
+import { updateStateAndLocalSt } from '../utils/updateStateAndLocalSt';
+import { useKanbanBoard } from '../hooks/useKanbanBoard';
 
 const defaultState = {
   isOpen: false,
-  typeForm: {},
+  typeForm: { current: {} },
   onClose: () => {},
   openingForm: (e: EventClick | EventChange, id?: string) => {},
   onToast: (type?: string) => {},
   onSubmit: (data: IFormsState, columnId?: string) => {},
   closeOnSelect: {},
-  setCloseOnSelect: ()=> {},
+  setCloseOnSelect: () => {},
+  updateColumns: {},
+  setUpdateColumns: () => {},
+  handleDragEnd: ()=>{},
 };
 
 const FormsContext = createContext<IFormsContext>(defaultState);
@@ -38,13 +44,15 @@ const FormsContext = createContext<IFormsContext>(defaultState);
 const useForms = () => useContext(FormsContext);
 
 const FormsProvider = ({ children }: IFormsProviderProps) => {
-  const dispatch = useAppDispatch();
-  const storeColumns: IColumns = useAppSelector(selectColumns());
+  const storeColumns: IColumns = localStorageService.getColumns();
+  const [updateColumns, setUpdateColumns] = useState<IColumns>(storeColumns);
+  const {handleDragEnd} = useKanbanBoard(updateColumns, setUpdateColumns)
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [typeForm, setTypeForm] = useState<IDefaultState>({});
   const [closeOnSelect, setCloseOnSelect] = useState<{ [x: string]: boolean }>(
     {}
-    );
+  );
+
+  const typeForm = useRef<IDefaultState>({});
 
   const toast = useToast();
 
@@ -54,10 +62,10 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
     onOpen();
     const settings: IDefaultState = {
       type: typeBtn,
-      title: formSettings[typeBtn].title,
+      title: formSettings[typeBtn]?.title,
     };
     if (id) settings.columnId = id;
-    setTypeForm(settings);
+    typeForm.current = settings;
   };
 
   const onToast = (type?: string) => {
@@ -68,31 +76,36 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
       variant: 'top-accent',
       isClosable: true,
       duration: 9000,
-      ...toastSettings[type ? type : typeForm.type],
+      ...toastSettings[type ? type : typeForm.current.type],
     });
   };
 
   const onSubmit: OnsubmitFunc = ({ defaultState }, columnId) => {
+    const { type } = typeForm.current;
     const {
       columnName,
       colorBadge,
       colorText,
-      title,
+      taskName,
       completed: completedStore,
     } = defaultState;
     let column: IColumn;
+    let store: IColumns;
+    let newTask: ITask;
     const completed = completedStore === 'false' ? false : true;
-    const newTask = {
-      completed: false,
-      createdAt: Date.now(),
-      problems: getRandomNum(50, 67),
-      completedProblems: getRandomNum(0, 45),
-      status: columnName || storeColumns[columnId!].title,
-      id: Date.now().toString(),
-      title,
-      userId: '1',
-    };
-    switch (typeForm.type) {
+    if (type === 'addColumn' || type === 'addTask') {
+      newTask = {
+        completed: false,
+        createdAt: Date.now(),
+        problems: getRandomNum(50, 67),
+        completedProblems: getRandomNum(0, 45),
+        status: columnName || storeColumns[columnId!]?.title,
+        id: Date.now().toString(),
+        title: taskName,
+        userId: '1',
+      };
+    }
+    switch (type) {
       case 'addColumn': {
         column = {
           id: (Object.values(storeColumns).length + 1).toString(),
@@ -100,17 +113,15 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           colorBadge,
           colorText,
           completed,
-          state: [newTask],
+          state: [newTask!],
         };
-        dispatch(addColumn(column!));
         break;
       }
       case 'addTask': {
         column = {
           ...storeColumns[columnId!],
-          state: [...storeColumns[columnId!].state, newTask],
+          state: [...storeColumns[columnId!].state, newTask!],
         };
-        dispatch(addTask(column!));
         break;
       }
       case 'editColumn': {
@@ -120,11 +131,21 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           colorText,
           completed,
         };
-        dispatch(editColumn(column!));
+        break;
+      }
+      case 'removeColumn': {
+        if (Object.values(storeColumns).length === 1) {
+          store = {};
+        } else {
+          const arr = Object.values(storeColumns).filter(
+            (item) => item.id !== columnId
+          );
+          store = orderingColumns(arr);
+        }
         break;
       }
     }
-    onClose();
+    updateStateAndLocalSt(setUpdateColumns, column!, store!);
     onToast();
   };
 
@@ -139,6 +160,9 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         onSubmit,
         closeOnSelect,
         setCloseOnSelect,
+        updateColumns,
+        setUpdateColumns,
+        handleDragEnd
       }}
     >
       {children}

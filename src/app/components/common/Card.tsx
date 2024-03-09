@@ -1,44 +1,20 @@
 import { Draggable, DraggableStateSnapshot } from 'react-beautiful-dnd';
 import { ICard } from '../../utils/types';
-import { Avatar, Badge, Box, Flex, Icon, Text } from '@chakra-ui/react';
+import {
+  Avatar,
+  Badge,
+  Box,
+  Flex,
+  Icon,
+  Text,
+  useMultiStyleConfig,
+} from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
 import ProgressBar from './ProgressBar';
 import { CheckDouble } from '../../../assets/icons/CheckDouble';
 import useRenameField from '../../hooks/useRenameField';
 import EditableField from './fields/EditableField';
-
-const container = {
-  position: 'relative',
-  w: '100%',
-  minW: '320px',
-  h: '102px',
-  borderRadius: '10px',
-  p: '18px 23px 23px 15px',
-  color: '#000',
-  mb: '7px',
-  cursor: 'pointer',
-  justifyContent: 'space-between',
-  flexDirection: 'column',
-};
-
-const icons = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  h: '24px',
-};
-
-const badge = {
-  variant: 'solid',
-  bg: '#F5F5FA',
-  w: '94px',
-  fontSize: '12px',
-  fontWeight: 'bold',
-  alignItems: 'center',
-  borderRadius: 10,
-  color: '#5F646D',
-  justifyContent: 'center',
-  display: 'flex',
-};
+import { useEffect } from 'react';
 
 const getStyleDraggable = (
   snapshot: DraggableStateSnapshot
@@ -50,23 +26,24 @@ const getStyleDraggable = (
 });
 
 const Card = ({ task, index, columnId }: ICard) => {
-  const {
-    renameTitle,
-    handleRename,
-    refInput,
-    onSubmit,
-    handleAddColumn,
-    refSettingsColumn,
-  } = useRenameField();
+  const { renameTitle, editedTitle, handleRename, refInput, onSubmitRename } =
+    useRenameField();
 
-  const getTitle = ({ title }: { title: string }) =>
-    title.length <= 36 ? title : title.slice(0, 36) + '...';
+  useEffect(()=> {
+    if(task.title === '') {
+      handleRename()
+    }
+  },[])
+
+  const styles = useMultiStyleConfig('Flex', {
+    variant: 'kanbanBoard',
+  });
 
   return (
     <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
       {(provided, snapshot) => (
         <Flex<any>
-          sx={container}
+          sx={styles.card}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
@@ -76,29 +53,35 @@ const Card = ({ task, index, columnId }: ICard) => {
             ...provided.draggableProps.style,
           }}
         >
-          {!renameTitle!.value ? (
+          {!renameTitle ? (
             <Box
               fontSize={'14px'}
               fontWeight={'bold'}
               mb={'14px'}
               onClick={handleRename}
               style={{ cursor: 'text' }}
+              w={'fit-content'}
+              maxW={'290px'}
             >
-              {renameTitle.title || getTitle(task)}
+              {editedTitle || task.title || 'No name!!!'}
             </Box>
           ) : (
             <EditableField
-              title={getTitle(task)}
+              title={task.title}
               name="taskName"
-              variant="titleColumn"
-              refDiv={refInput}
+              settings={{
+                placeholder: 'Введите имя задачи',
+                refDiv: refInput,
+                variant: 'titleColumn',
+              }}
               columnId={columnId}
               taskIdx={index.toString()}
-              onSubmit={onSubmit}
+              onSubmit={onSubmitRename}
             />
           )}
-          <Flex sx={icons}>
-            <Badge sx={badge} textTransform={'lowercase'}>
+
+          <Flex sx={styles.icons}>
+            <Badge sx={styles.badgeDate} textTransform={'lowercase'}>
               {displayDate(task.createdAt)}
             </Badge>
             <Flex w={'96px'}>
