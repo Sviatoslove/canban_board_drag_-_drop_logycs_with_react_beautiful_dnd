@@ -1,7 +1,6 @@
 import { Badge, Flex } from '@chakra-ui/react';
-import Meetballs from './Meetballs';
 import { ITitleColumn } from '../../utils/types';
-import CustomSelectField from './forms/CustomSelectField';
+import CustomSelectField from '../common/fields/CustomSelectField';
 import EditableField from '../common/fields/EditableField';
 import useRenameField from '../../hooks/useRenameField';
 import { useForms } from '../../context/useForms';
@@ -15,8 +14,8 @@ const badgeTitle = (colorBadge?: string, color?: string) => ({
   color: color,
   textTransform: 'none',
   cursor: 'default',
-  maxW:'270px',
-  whiteSpace: 'wrap'
+  maxW: '270px',
+  whiteSpace: 'wrap',
 });
 
 const TitleColumn = ({ colorBadge, title, color, columnId }: ITitleColumn) => {
@@ -35,6 +34,7 @@ const TitleColumn = ({ colorBadge, title, color, columnId }: ITitleColumn) => {
     <Flex alignItems={'center'} justifyContent={'space-between'} mb={'19px'}>
       {!renameTitle ? (
         <Badge
+          className="titleColumn"
           sx={badgeTitle(colorBadge, color)}
           onClick={handleRename}
           style={{ cursor: 'text' }}
@@ -49,13 +49,14 @@ const TitleColumn = ({ colorBadge, title, color, columnId }: ITitleColumn) => {
             placeholder: 'Введите имя колонки',
             refDiv: refInput,
             variant: 'titleColumn',
+            inputClassName:'titleColumn-input'
           }}
           columnId={columnId}
           onSubmit={onSubmitRename}
         />
       )}
       <CustomSelectField
-        icon={<Meetballs />}
+        nameClass="title-column-menu-button-icon"
         name="menuColumn"
         placeholder={null}
         options={[

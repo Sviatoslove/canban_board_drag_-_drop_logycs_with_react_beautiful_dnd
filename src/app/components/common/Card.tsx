@@ -3,18 +3,18 @@ import { ICard } from '../../utils/types';
 import {
   Avatar,
   Badge,
-  Box,
   Flex,
   Icon,
+  IconButton,
   Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react';
 import displayDate from '../../utils/displayDate';
 import ProgressBar from './ProgressBar';
 import { CheckDouble } from '../../../assets/icons/CheckDouble';
-import useRenameField from '../../hooks/useRenameField';
-import EditableField from './fields/EditableField';
-import { useEffect } from 'react';
+import TitleCard from '../ui/TitleCard';
+import { SmallCloseIcon } from '@chakra-ui/icons';
+import { useForms } from '../../context/useForms';
 
 const getStyleDraggable = (
   snapshot: DraggableStateSnapshot
@@ -26,15 +26,6 @@ const getStyleDraggable = (
 });
 
 const Card = ({ task, index, columnId }: ICard) => {
-  const { renameTitle, editedTitle, handleRename, refInput, onSubmitRename } =
-    useRenameField();
-
-  useEffect(()=> {
-    if(task.title === '') {
-      handleRename()
-    }
-  },[])
-
   const styles = useMultiStyleConfig('Flex', {
     variant: 'kanbanBoard',
   });
@@ -52,33 +43,9 @@ const Card = ({ task, index, columnId }: ICard) => {
             ...getStyleDraggable(snapshot),
             ...provided.draggableProps.style,
           }}
+          className="card"
         >
-          {!renameTitle ? (
-            <Box
-              fontSize={'14px'}
-              fontWeight={'bold'}
-              mb={'14px'}
-              onClick={handleRename}
-              style={{ cursor: 'text' }}
-              w={'fit-content'}
-              maxW={'290px'}
-            >
-              {editedTitle || task.title || 'No name!!!'}
-            </Box>
-          ) : (
-            <EditableField
-              title={task.title}
-              name="taskName"
-              settings={{
-                placeholder: 'Введите имя задачи',
-                refDiv: refInput,
-                variant: 'titleColumn',
-              }}
-              columnId={columnId}
-              taskIdx={index.toString()}
-              onSubmit={onSubmitRename}
-            />
-          )}
+          <TitleCard {...{ task, index, columnId, styles }} />
 
           <Flex sx={styles.icons}>
             <Badge sx={styles.badgeDate} textTransform={'lowercase'}>
@@ -105,6 +72,7 @@ const Card = ({ task, index, columnId }: ICard) => {
             completedProblems={task.completedProblems}
             problems={task.problems}
           />
+   
         </Flex>
       )}
     </Draggable>

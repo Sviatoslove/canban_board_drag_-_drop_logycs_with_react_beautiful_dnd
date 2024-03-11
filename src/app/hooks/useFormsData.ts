@@ -76,11 +76,12 @@ const useFormsData = ({ state }: IStateProps) => {
   const handleSubmit =
     (
       onSubmit: (data: IFormsState, columnId?: string, taskId?: string) => void,
-      columnId?: string, taskId?: string
+      columnId?: string,
+      taskId?: string
     ) =>
     (e: React.FormEvent) => {
       e.preventDefault();
-      if(Object.values(errors.fields).length)return
+      if (Object.values(errors.fields).length) return;
       onSubmit(data, columnId, taskId);
     };
 

@@ -13,14 +13,13 @@ const Column = ({
   id,
   colorBadge,
 }: IColumn) => {
-
-  const {handleAddColumn}=useRenameField()
+  const { handleAddColumn, renameTitle } = useRenameField();
 
   const styles = useMultiStyleConfig('Flex', {
     variant: 'kanbanBoard',
   });
 
-  const getStylesBtn = (style: string, value: string[]) =>
+  const getStylesValue = (style: string, value: string[]) =>
     tasks.length ? { [style]: value[0] } : { [style]: value[1] };
 
   const getBackgroundColor = (snapshot: DroppableStateSnapshot): string => {
@@ -28,8 +27,6 @@ const Column = ({
     if (snapshot.draggingFromThisWith) return 'lightgreen';
     return 'transparent';
   };
-
-
 
   return (
     <Flex sx={styles.column} className="columns">
@@ -39,29 +36,28 @@ const Column = ({
         color={colorText}
         columnId={id}
       />
+      <Button
+        onClick={(e) => handleAddColumn!(e, id)}
+        datatype="addTask"
+        leftIcon={<AddIconTask />}
+        sx={styles.buttonAddTask}
+      >
+        Add a task
+      </Button>
       <Droppable droppableId={id}>
         {(provided, snapshot) => (
           <Flex<any>
             sx={styles.columnContent}
-            {...getStylesBtn('height', ['fit-content', '170px'])}
+            {...getStylesValue('height', ['fit-content', '170px'])}
             ref={provided.innerRef}
             {...provided.droppableProps}
             isdraggingover={snapshot.isDraggingOver.toString()}
             bg={getBackgroundColor(snapshot)}
           >
-            {(tasks).map((task, index) => (
+            {tasks.map((task, index) => (
               <Card key={index} index={index} task={task} columnId={id} />
             ))}
             {provided.placeholder}
-            <Button
-              onClick={(e) => handleAddColumn!(e, id)}
-              datatype="addTask"
-              leftIcon={<AddIconTask />}
-              sx={styles.buttonAddTask}
-              style={{ ...getStylesBtn('position', ['static', 'absolute']) }}
-            >
-              Add a task
-            </Button>
           </Flex>
         )}
       </Droppable>

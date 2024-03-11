@@ -15,7 +15,7 @@ export type HandleSubmitFunc = (
   columnId?: string
 ) => (e: React.FormEvent) => void;
 
-export type OpeningForm = (e: EventClick | EventChange, id?: string) => void;
+export type OpeningForm = (e: EventClick | EventChange, columnId?: string, taskId?: string) => void;
 
 export interface IFormsContext {
   isOpen: IsOpen;

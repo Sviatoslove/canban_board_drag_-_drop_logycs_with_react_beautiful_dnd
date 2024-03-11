@@ -17,6 +17,7 @@ export const toastSettings: IToastSettings = {
   },
   editColumn: {
     title: 'Колонка была изменена!',
+    description: 'Ещё есть невыполненные задачи',
   },
   editColumnTitle: {
     title: 'Заголовок колонки успешно изменен!',
@@ -26,6 +27,10 @@ export const toastSettings: IToastSettings = {
   },
   removeColumn: {
     title: 'Колонка и все её задачи успешно удалены!',
+    status: 'warning'
+  },
+  removeTask: {
+    title: 'Задача успешно удалена!',
     status: 'warning'
   },
 };

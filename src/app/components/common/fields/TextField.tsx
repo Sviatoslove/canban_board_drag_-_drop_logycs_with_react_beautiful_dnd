@@ -15,7 +15,7 @@ interface ITextfieldProps {
   placeholder?: string;
   variant?: string;
   refDiv?: any;
-  // selectCategory: string;
+  inputClassName?: string;
 }
 
 const TextField = ({
@@ -27,11 +27,13 @@ const TextField = ({
   placeholder,
   variant,
   refDiv,
+  inputClassName,
 }: ITextfieldProps) => {
   const styles = useMultiStyleConfig('TextField', {
     variant,
     value,
-    placeholder
+    placeholder,
+    error,
   });
 
   const cleanInput = (e: React.MouseEvent) => {
@@ -40,7 +42,7 @@ const TextField = ({
   };
   return (
     <>
-      <FormControl isInvalid={!!error}>
+      <FormControl isInvalid={!!error} className={inputClassName}>
         <Text>{label}</Text>
         <Input
           id={name}

@@ -252,4 +252,11 @@ export const formSettings: IFormSettings = {
     ],
     defaultState: {},
   },
+  removeTask: {
+    title: 'Вы уверены, что хотите удалить задачу?',
+    btnTitle: 'Удалить задачу',
+    fields: [
+    ],
+    defaultState: {},
+  },
 };

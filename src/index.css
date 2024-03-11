@@ -22,3 +22,107 @@ code {
   margin-right: 0 !important;
 }
 
+/* styles for dinamic icon card of task */
+
+.card-delete-btn::after,
+.card-delete-btn::before,
+.card::after {
+  position: absolute;
+  content: '';
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.card::after {
+  top: 8px;
+  right: 8px;
+}
+
+.card-delete-btn::after,
+.card-delete-btn::before {
+  transition: opacity 0.2s ease-in 0s, transform 0.2s ease-in 0s;
+}
+
+.card-delete-btn::after {
+  background: url('../src/assets/icons/delete.png') no-repeat center
+    center/cover;
+}
+
+.card-delete-btn::before,
+.card::after {
+  background: url('../src/assets/icons/icons-pencil1.png') no-repeat center
+    center/cover;
+}
+
+.card:hover > .card-delete-btn::after {
+  color: red;
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+.card-delete-btn:hover.card-delete-btn::after {
+  transform: scale(1.2);
+}
+
+.title-card:hover + .card-delete-btn::after {
+  opacity: 0;
+}
+
+.title-card:hover + .card-delete-btn::before {
+  opacity: 1;
+}
+
+/* styles for dinamic icon titleColumn buttonMenu */
+
+.title-column-menu-button-icon::after,
+.title-column-menu-button-icon::before {
+  position: absolute;
+  content: '';
+  top: 50;
+  left: 50;
+  width: 30px;
+  height: 20px;
+  transition: opacity 0.2s ease-in 0s;
+}
+
+.title-column-menu-button-icon::after {
+  background: url('../src/assets/icons/icons-meetbalsMenu.png') no-repeat center
+    center/cover;
+}
+
+.title-column-menu-button-icon::before {
+  background: url('../src/assets/icons/icons-pencil1.png') no-repeat center
+    center/cover;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+}
+
+.titleColumn:hover + .formControl > .title-column-menu-button-icon::after {
+  opacity: 0;
+}
+
+.titleColumn:hover + .formControl > .title-column-menu-button-icon::before {
+  opacity: 1;
+}
+
+div[edit='true']::after {
+  opacity: 1;
+}
+
+button[edit='true']::after {
+  opacity: 0;
+}
+
+button[edit='true']::before {
+  opacity: 1;
+}
+
+button[edit='true']:hover::before {
+  opacity: 0;
+}
+
+button[edit='true']:hover::after {
+  opacity: 1;
+}

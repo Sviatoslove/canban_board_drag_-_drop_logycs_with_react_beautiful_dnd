@@ -13,7 +13,7 @@ import {
   useMultiStyleConfig,
 } from '@chakra-ui/react';
 import { EventChange } from '../../../utils/types';
-import { IDefaultState } from './settingsForm';
+import { IDefaultState } from '../../ui/forms/settingsForm';
 import { JSXElementConstructor, ReactElement } from 'react';
 
 interface ISelectFieldProps {
@@ -41,6 +41,7 @@ interface ISelectFieldProps {
     columnId?: string;
   };
   wrapperStyles?: IDefaultState;
+  nameClass?: string;
   icon?: ReactElement<any, string | JSXElementConstructor<any>> | undefined;
 }
 
@@ -61,6 +62,7 @@ const CustomSelectField = ({
   variant,
   wrapperStyles,
   menuOption,
+  nameClass
 }: ISelectFieldProps) => {
   const styles = useMultiStyleConfig('CustomSelectField', {
     variant,
@@ -86,14 +88,15 @@ const CustomSelectField = ({
   };
 
   return (
-    <FormControl isInvalid={!!error} mt={2} sx={wrapperStyles}>
+    <FormControl isInvalid={!!error} mt={2} sx={wrapperStyles} className='formControl'>
       <label htmlFor={name}>{label}</label>
       <Menu
         isOpen={menuOption?.closeOnSelect[menuOption.columnId!]}
         closeOnSelect={!menuOption || false}
       >
         <MenuButton
-          __css={styles.menuButton}
+          className={nameClass}
+          sx={styles.menuButton}
           as={Button}
           onClick={handleOpenMenu}
         >

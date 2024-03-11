@@ -6,9 +6,9 @@ import {
 } from '@chakra-ui/react';
 import { useFormsData } from '../../../hooks/useFormsData';
 import { validatorConfig } from '../../../utils/validator';
-import TextField from './TextField';
+import TextField from '../../common/fields/TextField';
 import { IFieldsProps, IFormProps } from '../../../utils/types';
-import CustomSelectField from './CustomSelectField';
+import CustomSelectField from '../../common/fields/CustomSelectField';
 import { formSettings } from './settingsForm';
 import { menuItemStyles } from '../../../chakra/customSelectedFieldStyles';
 import { ChevronDownIcon } from '@chakra-ui/icons';
@@ -69,7 +69,7 @@ const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
 
   return (
     <Box pb={5} px={10}>
-      <form onSubmit={handleSubmit(onSubmit, columnId)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <>{fields.map((field) => Fields[field.typeField](field))}</>
         <Flex mt={4} ml={'auto'} w={'fit-content'}>
           <Stack direction="row" spacing={4}>

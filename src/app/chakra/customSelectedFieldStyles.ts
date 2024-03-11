@@ -68,10 +68,11 @@ export const CustomSelectField = helpers.defineMultiStyleConfig({
     }),
     titleColumn: ({ color, bg, name }: StyleFunctionProps) => ({
       menuButton: {
-        shadow: '0px 0px 6px 1px rgba(0,0,0,0.3)',
-        borderRadius: 10,
-        p: '5px',
-        ml: 'auto',
+        position: 'relative',
+        paddingInlineStart:0,
+        paddingInlineEnd: 0,
+        h: '20px',
+        borderRadius:'50px',
         _hover: {
           shadow:
             '0px 0px 2px 2px rgba(0,0,0,0.3), 0px 0px 4px 4px rgba(0,0,0,0.3)',

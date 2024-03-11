@@ -12,6 +12,7 @@ const helpers = createMultiStyleConfigHelpers([
   'card',
   'icons',
   'badgeDate',
+  'iconButton',
 ]);
 
 export const Flex = helpers.defineMultiStyleConfig({
@@ -50,13 +51,13 @@ export const Flex = helpers.defineMultiStyleConfig({
         minW: '320px',
         w: '100%',
         h: '52px',
+        minH: '52px',
         border: 'dotted',
         borderColor: '#CFDBD5',
         borderRadius: 5,
         bg: '#fff',
         borderWidth: '2px',
-        top: 0,
-        left: 0,
+        mb: '7px',
       },
       card: {
         position: 'relative',
@@ -79,7 +80,8 @@ export const Flex = helpers.defineMultiStyleConfig({
       badgeDate: {
         variant: 'solid',
         bg: '#F5F5FA',
-        w: '94px',
+        w: 'fit-content',
+        px: 2,
         fontSize: '12px',
         fontWeight: 'bold',
         alignItems: 'center',
@@ -87,6 +89,21 @@ export const Flex = helpers.defineMultiStyleConfig({
         color: '#5F646D',
         justifyContent: 'center',
         display: 'flex',
+      },
+      iconButton: {
+        position: 'absolute',
+        color: 'transparent',
+        bg: 'transparent',
+        w: 'fit-content',
+        _hover: {
+          bg: 'transparent',
+        },
+        zIndex:1,
+        paddingInline:0,
+        h:'20px',
+        minW:'20px',
+        top: '8px',
+        right: '8px',
       },
     }),
   },

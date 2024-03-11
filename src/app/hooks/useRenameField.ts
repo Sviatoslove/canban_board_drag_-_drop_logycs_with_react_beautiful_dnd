@@ -20,6 +20,7 @@ const useRenameField = () => {
 
   const handleAddColumn = (e: EventChange | EventClick, columnId?: string) => {
     const { target }: any = e;
+    if(renameTitle)return
     const HTMLColumnList = target.closest('.columnList');
     const type = target.closest('button')?.getAttribute('datatype');
     if (type === 'addTask') {
@@ -36,15 +37,8 @@ const useRenameField = () => {
       };
       const column = {
         ...store[+columnId!],
-        state: [...store[+columnId!].state, newTask!],
+        state: [newTask!, ...store[+columnId!].state],
       };
-      const numTask = store[columnId!].state.length;
-      if (numTask > 4)
-        setTimeout(()=>{
-          HTMLColumnList?.childNodes[+columnId!-1]?.childNodes[1]?.childNodes[
-            numTask
-          ]?.scrollIntoView();
-        }, 10)
       updateStateAndLocalSt(setUpdateColumns, column);
       onToast(type);
       return;
@@ -83,15 +77,26 @@ const useRenameField = () => {
   };
 
   function handleRename() {
-    const getFocus=()=> {
-      refInput.current?.focus();
+    const getFocus = () => {
+      let wrappIcon:any
+      const elem = refInput.current!
+      elem.focus();
+      elem.selectionStart = elem.value.length;
+      if(elem.name === 'taskName') wrappIcon = elem.closest('.card')
+      else wrappIcon = elem.closest('form').nextElementSibling.childNodes[1]
+      //Задаю атрибут для отрисовки иконки редактирования на карте
+      wrappIcon.setAttribute('edit', 'true');
       if (refInput.current) {
         refInput.current.onblur = function () {
-          if(refInput.current?.value.length < 2) getFocus()
-          else setTimeout(() => setRenameTitle(false), 0);
+          if (refInput.current?.value.length < 2) getFocus();
+          else
+            setTimeout(() => {
+              wrappIcon!.setAttribute('edit', 'false');
+              setRenameTitle(false);
+            }, 100);
         };
       }
-    }
+    };
     setTimeout(() => getFocus(), 10);
     setRenameTitle(true);
   }
@@ -130,6 +135,8 @@ const useRenameField = () => {
     onSubmitRename,
     handleAddColumn,
     refSettingsColumn,
+    setRenameTitle,
+    openingForm,
   };
 };
 

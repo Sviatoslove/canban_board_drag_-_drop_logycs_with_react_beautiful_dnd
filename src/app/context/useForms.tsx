@@ -36,7 +36,7 @@ const defaultState = {
   setCloseOnSelect: () => {},
   updateColumns: {},
   setUpdateColumns: () => {},
-  handleDragEnd: ()=>{},
+  handleDragEnd: () => {},
 };
 
 const FormsContext = createContext<IFormsContext>(defaultState);
@@ -46,7 +46,7 @@ const useForms = () => useContext(FormsContext);
 const FormsProvider = ({ children }: IFormsProviderProps) => {
   const storeColumns: IColumns = localStorageService.getColumns();
   const [updateColumns, setUpdateColumns] = useState<IColumns>(storeColumns);
-  const {handleDragEnd} = useKanbanBoard(updateColumns, setUpdateColumns)
+  const { handleDragEnd } = useKanbanBoard(updateColumns, setUpdateColumns);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [closeOnSelect, setCloseOnSelect] = useState<{ [x: string]: boolean }>(
     {}
@@ -56,7 +56,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
 
   const toast = useToast();
 
-  const openingForm: OpeningForm = (e, id) => {
+  const openingForm: OpeningForm = (e, columnId, taskId) => {
     const { target }: any = e;
     const typeBtn: string = target.closest('button').getAttribute('dataType');
     onOpen();
@@ -64,7 +64,8 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
       type: typeBtn,
       title: formSettings[typeBtn]?.title,
     };
-    if (id) settings.columnId = id;
+    if (columnId) settings.columnId = columnId;
+    if (taskId) settings.taskId = taskId;
     typeForm.current = settings;
   };
 
@@ -80,8 +81,8 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
     });
   };
 
-  const onSubmit: OnsubmitFunc = ({ defaultState }, columnId) => {
-    const { type } = typeForm.current;
+  const onSubmit: OnsubmitFunc = ({ defaultState }) => {
+    const { type, columnId, taskId } = typeForm.current;
     const {
       columnName,
       colorBadge,
@@ -93,7 +94,10 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
     let store: IColumns;
     let newTask: ITask;
     const completed = completedStore === 'false' ? false : true;
-    if (type === 'addColumn' || type === 'addTask') {
+    if (
+      type === 'addColumn'
+      //  || type === 'addTask'
+    ) {
       newTask = {
         completed: false,
         createdAt: Date.now(),
@@ -117,13 +121,13 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         };
         break;
       }
-      case 'addTask': {
-        column = {
-          ...storeColumns[columnId!],
-          state: [...storeColumns[columnId!].state, newTask!],
-        };
-        break;
-      }
+      // case 'addTask': {
+      //   column = {
+      //     ...storeColumns[columnId!],
+      //     state: [...storeColumns[columnId!].state, newTask!],
+      //   };
+      //   break;
+      // }
       case 'editColumn': {
         column = {
           ...storeColumns[columnId!],
@@ -138,9 +142,26 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
           store = {};
         } else {
           const arr = Object.values(storeColumns).filter(
-            (item) => item.id !== columnId
+            (column) => column.id !== columnId
           );
           store = orderingColumns(arr);
+        }
+        break;
+      }
+      case 'removeTask': {
+        if (storeColumns[columnId].state.length === 1) {
+          column = {
+            ...storeColumns[columnId],
+            state:[]
+          };
+        } else {
+          const arr = storeColumns[columnId].state.filter(
+            (task) => task.id !== taskId
+          );
+          column = {
+            ...storeColumns[columnId],
+            state: [...arr]
+          };
         }
         break;
       }
@@ -162,7 +183,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         setCloseOnSelect,
         updateColumns,
         setUpdateColumns,
-        handleDragEnd
+        handleDragEnd,
       }}
     >
       {children}

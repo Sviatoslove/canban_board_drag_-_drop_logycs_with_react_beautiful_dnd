@@ -1,8 +1,8 @@
 import { OnsubmitFunc } from '../../../context/useFormsTypes';
 import { IStateProps, useFormsData } from '../../../hooks/useFormsData';
 import { validatorConfig } from '../../../utils/validator';
-import TextAreaField from '../../ui/forms/TextAreaField';
-import TextField from '../../ui/forms/TextField';
+import TextAreaField from './TextAreaField';
+import TextField from './TextField';
 
 interface IEditableField {
   title: string;
@@ -14,6 +14,8 @@ interface IEditableField {
     variant?: string;
     refDiv?: any;
     placeholder?: string;
+    textAreaClassName?: string;
+    inputClassName?: string;
   };
 }
 
@@ -36,12 +38,11 @@ const EditableField = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit, columnId, taskIdx)}>
-      <TextField {...register(name)} {...settings} />
-      {/* {name === 'columnName' ? (
+      {name === 'columnName' ? (
         <TextField {...register(name)} {...settings} />
       ) : (
         <TextAreaField {...register(name)} {...settings} />
-      )} */}
+      )}
     </form>
   );
 };
