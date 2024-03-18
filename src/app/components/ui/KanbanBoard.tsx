@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
-import Column from '../common/Column';
 import { Flex, useMultiStyleConfig } from '@chakra-ui/react';
-import { IColumn, IColumns } from '../../utils/types';
+import Column from '../common/Column';
+import { IColumn } from '../../utils/types';
 import EmptyTasksList from './EmptyTasksList';
 import { OpeningForm } from '../../context/useFormsTypes';
 import { useForms } from '../../context/useForms';
@@ -14,7 +14,7 @@ const ColumnList = memo(
     ))
 );
 
-const KanbanBoard = ({ userColumns }: { userColumns: IColumns }) => {
+const KanbanBoard = () => {
   const { openingForm, updateColumns, handleDragEnd } = useForms();
   const columnsLength = Object.values(updateColumns).length
 
@@ -23,10 +23,9 @@ const KanbanBoard = ({ userColumns }: { userColumns: IColumns }) => {
     columnsLength
   });
 
-  console.log('=================================================:');
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <Flex sx={styles.wrapper}>
+      <Flex className='wrapper-columnList' sx={styles.wrapper}>
         { columnsLength ? (
           <Flex sx={styles.columnList} className="columnList">
             <ColumnList

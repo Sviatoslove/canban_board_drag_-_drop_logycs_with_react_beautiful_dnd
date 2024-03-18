@@ -1,20 +1,17 @@
 import { Draggable, DraggableStateSnapshot } from 'react-beautiful-dnd';
-import { ICard } from '../../utils/types';
 import {
   Avatar,
   Badge,
   Flex,
   Icon,
-  IconButton,
   Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react';
+import { ICard } from '../../utils/types';
 import displayDate from '../../utils/displayDate';
 import ProgressBar from './ProgressBar';
 import { CheckDouble } from '../../../assets/icons/CheckDouble';
 import TitleCard from '../ui/TitleCard';
-import { SmallCloseIcon } from '@chakra-ui/icons';
-import { useForms } from '../../context/useForms';
 
 const getStyleDraggable = (
   snapshot: DraggableStateSnapshot
@@ -27,13 +24,14 @@ const getStyleDraggable = (
 
 const Card = ({ task, index, columnId }: ICard) => {
   const styles = useMultiStyleConfig('Flex', {
-    variant: 'kanbanBoard',
+    variant: 'card',
   });
 
   return (
-    <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+    <Draggable key={task.id} draggableId={task?.id.toString()} index={index}>
       {(provided, snapshot) => (
         <Flex<any>
+          className="card"
           sx={styles.card}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
@@ -43,14 +41,11 @@ const Card = ({ task, index, columnId }: ICard) => {
             ...getStyleDraggable(snapshot),
             ...provided.draggableProps.style,
           }}
-          className="card"
         >
           <TitleCard {...{ task, index, columnId, styles }} />
 
           <Flex sx={styles.icons}>
-            <Badge sx={styles.badgeDate} textTransform={'lowercase'}>
-              {displayDate(task.createdAt)}
-            </Badge>
+            <Badge sx={styles.badgeDate}>{displayDate(task.createdAt)}</Badge>
             <Flex w={'96px'}>
               <Flex alignItems={'center'}>
                 <Icon as={CheckDouble} />
@@ -59,11 +54,7 @@ const Card = ({ task, index, columnId }: ICard) => {
                 </Text>
               </Flex>
               <Avatar
-                ml={'2px'}
-                w={'24px'}
-                h={'24px'}
-                borderRadius={'50px'}
-                shadow={'0px 0px 6px 1px rgba(0,0,0,0.2)'}
+                sx={styles.avatar}
                 src={'https://joesch.moe/api/v1/random?key=' + task.id}
               />
             </Flex>
@@ -72,7 +63,6 @@ const Card = ({ task, index, columnId }: ICard) => {
             completedProblems={task.completedProblems}
             problems={task.problems}
           />
-   
         </Flex>
       )}
     </Draggable>

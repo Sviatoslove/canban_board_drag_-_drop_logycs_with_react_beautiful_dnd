@@ -2,15 +2,15 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
-  IconButton,
   Text,
   Textarea,
   useMultiStyleConfig,
 } from '@chakra-ui/react';
-import { EventChange, EventClick } from '../../../utils/types';
+import { EventChange } from '../../../utils/types';
 import { DeleteIcon, OkIcon } from '../../../../assets/icons';
 import CustomIconButton from '../CustomIconButton';
-import useRenameField from '../../../hooks/useRenameField';
+import localStorageService from '../../../services/localStorage.service';
+import { getWithForText } from '../../../utils/getWithForText';
 
 interface ITextfieldProps {
   name: string;
@@ -42,19 +42,10 @@ const TextAreaField = ({
     error,
   });
 
-  const cleanInput = (e: React.MouseEvent) => {
-    const target: any = e.target;
-    if (value === '0') target.value = '';
-  };
-
-  const styleBtn = {
-    bg: 'transparent',
-    w: '32px',
-    h: '32px',
-    alignSelf: 'end',
-  };
-  const rows = Math.ceil(value.length / 21);
-
+  const numOfColumns = Object.values(localStorageService.getColumns()).length;
+  const rate = numOfColumns === 1 ? 880 : numOfColumns === 2 ? 374 : 190;
+  const rows = Math.ceil(getWithForText(value, {fontSize: '0.75rem', fontWeight: 'bold'}).width / rate);
+  
   return (
     <>
       <FormControl isInvalid={!!error} className={textAreaClassName}>
@@ -65,7 +56,6 @@ const TextAreaField = ({
             name={name}
             value={value}
             onChange={onChange}
-            onClick={cleanInput}
             size="sm"
             placeholder={placeholder}
             sx={styles.area}
@@ -79,15 +69,15 @@ const TextAreaField = ({
               widthIcon="24px"
               dataType="cancel"
               ariaLabel="Cancel"
-              {...styleBtn}
+              {...styles.customIconButtonArea}
             />
             <CustomIconButton
               icon={OkIcon}
               widthIcon="24px"
-              {...styleBtn}
               dataType="changedTitle"
               ariaLabel="Save title"
               type="submit"
+              {...styles.customIconButtonArea}
             />
           </Flex>
         </Flex>

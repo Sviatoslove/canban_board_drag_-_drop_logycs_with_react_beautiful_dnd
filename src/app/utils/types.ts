@@ -104,3 +104,42 @@ export type EventChange =
     columnId: string;
     onSubmit: OnsubmitFunc,
   }
+
+  export interface ModalWindowProps {
+    title?: string;
+    isOpen: boolean;
+    onClose: FuncVoid;
+    children?: React.ReactNode;
+  }
+
+  export interface IProgressBar {
+    completedProblems: number;
+    problems: number;
+  }
+
+  export interface IEditableField {
+    title: string;
+    name: string;
+    columnId?: string;
+    onSubmit: OnsubmitFunc;
+    taskIdx?: string;
+    settings?: {
+      variant?: string;
+      refDiv?: any;
+      placeholder?: string;
+      textAreaClassName?: string;
+      inputClassName?: string;
+    };
+  }
+
+  export interface ITextfieldProps {
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    label?: string;
+    error?: string;
+    placeholder?: string;
+    variant?: string;
+    refDiv?: any;
+    inputClassName?: string;
+  }

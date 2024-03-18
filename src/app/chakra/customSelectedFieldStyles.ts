@@ -44,7 +44,14 @@ const menuButtonStyles = (
   }
 };
 
-const helpers = createMultiStyleConfigHelpers(['menuButton', 'menuItem', 'optionGroup', 'menu', 'menuDivider']);
+const helpers = createMultiStyleConfigHelpers([
+  'wrapper',
+  'menuButton',
+  'menuList',
+  'menuItem',
+  'menuDivider',
+  'optionGroup',
+]);
 
 export const CustomSelectField = helpers.defineMultiStyleConfig({
   variants: {
@@ -67,39 +74,44 @@ export const CustomSelectField = helpers.defineMultiStyleConfig({
       },
     }),
     titleColumn: ({ color, bg, name }: StyleFunctionProps) => ({
+      wrapper: {
+        m: '0px 3px 0 auto',
+        w: 'fit-content',
+      },
       menuButton: {
         position: 'relative',
-        paddingInlineStart:0,
+        paddingInlineStart: 0,
         paddingInlineEnd: 0,
         h: '20px',
-        borderRadius:'50px',
+        borderRadius: '50px',
         _hover: {
           shadow:
             '0px 0px 2px 2px rgba(0,0,0,0.3), 0px 0px 4px 4px rgba(0,0,0,0.3)',
         },
         ...menuButtonStyles(color, bg, name),
       },
+      menuList: {
+        w: 'fit-content',
+        borderRadius: 10,
+        bg: '#8080809e',
+        p: 0,
+      },
       menuItem: {
         borderRadius: 10,
-        bg:'transparent',
+        bg: 'transparent',
         _focus: { bg: 'transparent' },
-        _hover:{bg:'#ffffff9e'}
-      },
-      optionGroup: {
-        textShadow:'1.5px 1.5px #00000063',
-        fontSize: '18px',
-        whiteSpace: 'nowrap'
-      },
-      menu: {
-        w:'fit-content',
-        borderRadius: 10,
-        bg:'#8080809e'
+        _hover: { bg: '#ffffff9e' },
       },
       menuDivider: {
-        borderWidth:'2px',
-        w:'95%',
-        mx:"auto",
-        borderColor:'#ffffff9e',
+        borderWidth: '2px',
+        w: '95%',
+        mx: 'auto',
+        borderColor: '#ffffff9e',
+      },
+      optionGroup: {
+        textShadow: '1.5px 1.5px #00000063',
+        fontSize: '18px',
+        whiteSpace: 'nowrap',
       },
     }),
   },

@@ -4,19 +4,28 @@ import {
 } from '@chakra-ui/react';
 
 const helpers = createMultiStyleConfigHelpers([
+  // KanbanBoard
   'wrapper',
   'columnList',
+  // Column
   'column',
-  'columnContent',
   'buttonAddTask',
+  'columnContent',
+  'badgeTitle',
+  // Card
   'card',
   'icons',
   'badgeDate',
   'iconButton',
+  'avatar',
+  // EmptyTasksList
+  'wrapperEmptyTasksList',
+  'boxH1',
+  'boxSpan',
+  'link',
 ]);
 
 export const Flex = helpers.defineMultiStyleConfig({
-  baseStyle: {},
   variants: {
     kanbanBoard: ({ columnsLength }: StyleFunctionProps) => ({
       wrapper: {
@@ -28,13 +37,15 @@ export const Flex = helpers.defineMultiStyleConfig({
         shadow: '0px 0px 10px 10px rgba(0,0,0,0.3)',
         borderRadius: 10,
         bg: '#f5f5fa',
-        overflow: columnsLength > 3 ? 'auto' : 'hidden',
+        overflowX: columnsLength > 3 ? 'auto' : 'hidden',
+        overflowY: 'auto',
       },
       columnList: {
         w: '100%',
         justifyContent: 'space-between',
-        scrollBehavior: 'smooth',
       },
+    }),
+    column: ({ tasksLength, colorBadge, color }: StyleFunctionProps) => ({
       column: {
         flexDirection: 'column',
         w: '100%',
@@ -43,6 +54,7 @@ export const Flex = helpers.defineMultiStyleConfig({
         mr: '8px',
       },
       columnContent: {
+        height: tasksLength ? 'fit-content' : '170px',
         flexDirection: 'column',
         borderRadius: '10px',
         position: 'relative',
@@ -59,6 +71,20 @@ export const Flex = helpers.defineMultiStyleConfig({
         borderWidth: '2px',
         mb: '7px',
       },
+      badgeTitle: {
+        borderRadius: 15,
+        bgColor: colorBadge,
+        px: '15px',
+        py: '2px',
+        variant: 'solid',
+        color: color,
+        textTransform: 'none',
+        cursor: 'default',
+        maxW: '270px',
+        whiteSpace: 'wrap',
+      },
+    }),
+    card: {
       card: {
         position: 'relative',
         w: '100%',
@@ -89,6 +115,7 @@ export const Flex = helpers.defineMultiStyleConfig({
         color: '#5F646D',
         justifyContent: 'center',
         display: 'flex',
+        textTransform: 'lowercase',
       },
       iconButton: {
         position: 'absolute',
@@ -98,13 +125,52 @@ export const Flex = helpers.defineMultiStyleConfig({
         _hover: {
           bg: 'transparent',
         },
-        zIndex:1,
-        paddingInline:0,
-        h:'20px',
-        minW:'20px',
+        zIndex: 1,
+        paddingInline: 0,
+        h: '20px',
+        minW: '20px',
         top: '8px',
         right: '8px',
       },
-    }),
+      avatar: {
+        ml: '2px',
+        w: '24px',
+        h: '24px',
+        borderRadius: '50px',
+        shadow: '0px 0px 6px 1px rgba(0,0,0,0.2)',
+      },
+    },
+    emptyTasksList: {
+      wrapperEmptyTasksList: {
+        mx: 'auto',
+        h: 'fit-content',
+        mt: '100px',
+        flexDirection: 'column',
+        fontFamily: 'Roboto Flex',
+      },
+      boxH1: {
+        fontWeight: '800',
+        fontSize: '42px',
+        lineHeight: '56px',
+        mt: '50px',
+        mx: 'auto',
+        mb: '6px',
+      },
+      boxSpan: {
+        fontWeight: '400',
+        fontSize: '14px',
+        lineHeight: '21px',
+        mx: 'auto',
+      },
+      link: {
+        fontWeight: '700',
+        fontSize: '14px',
+        lineHeight: '21px',
+        mx: 'auto',
+        color: '#0052FF',
+        w: '144px',
+        h: '52px',
+      },
+    },
   },
 });

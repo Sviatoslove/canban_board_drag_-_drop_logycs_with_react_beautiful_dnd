@@ -1,5 +1,14 @@
 import { Button } from '@chakra-ui/react';
 
+interface ICustomIconButton {
+  icon: any;
+  dataType: string;
+  ariaLabel: string;
+  widthIcon?: string;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset' | undefined;
+}
+
 const CustomIconButton = ({
   icon,
   widthIcon,
@@ -8,14 +17,7 @@ const CustomIconButton = ({
   type,
   onClick,
   ...rest
-}: {
-  icon: any;
-  dataType: string;
-  ariaLabel: string;
-  widthIcon?: string;
-  onClick?: () => void,
-  type?: 'button' | 'submit' | 'reset' | undefined;
-}) => {
+}: ICustomIconButton) => {
   return (
     <Button
       {...rest}

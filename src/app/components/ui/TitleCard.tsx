@@ -32,7 +32,7 @@ const TitleCard = ({ task, index, columnId, ...rest }: ICard) => {
             mb={'14px'}
             onClick={handleRename}
             style={{ cursor: 'text' }}
-            w={'100%'}
+            w={'fit-content'}
           >
             {editedTitle || task.title || 'No name!!!'}
           </Box>

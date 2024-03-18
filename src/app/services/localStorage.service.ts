@@ -6,7 +6,7 @@ const localStorageService = {
   },
 
   getColumns(): any {
-    return JSON.parse(localStorage.getItem(this.COLUMNS) || '{}')!;
+    return JSON.parse(localStorage.getItem(this.COLUMNS) || 'null')!;
   },
 };
 

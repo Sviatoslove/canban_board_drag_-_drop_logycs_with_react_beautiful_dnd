@@ -9,9 +9,13 @@ import { updateStateAndLocalSt } from '../utils/updateStateAndLocalSt';
 import { orderingColumns } from '../utils/orderingColumns';
 
 const useRenameField = () => {
-  const storeColumns: IColumns = localStorageService.getColumns();
-  const { onToast, openingForm, setCloseOnSelect, setUpdateColumns } =
-    useForms();
+  const {
+    onToast,
+    openingForm,
+    setCloseOnSelect,
+    setUpdateColumns,
+    updateColumns,
+  } = useForms();
   const [editedTitle, setEditedTitle] = useState<string>('');
   const [renameTitle, setRenameTitle] = useState<boolean>(false);
 
@@ -20,8 +24,9 @@ const useRenameField = () => {
 
   const handleAddColumn = (e: EventChange | EventClick, columnId?: string) => {
     const { target }: any = e;
-    if(renameTitle)return
+    if (renameTitle) return;
     const HTMLColumnList = target.closest('.columnList');
+    const HTMLWrapperColumnList = target.closest('.wrapper-columnList');
     const type = target.closest('button')?.getAttribute('datatype');
     if (type === 'addTask') {
       const store: IColumns = localStorageService.getColumns();
@@ -58,17 +63,19 @@ const useRenameField = () => {
     };
     if (type === 'addColumnAuto') {
       let newColumns: IColumns;
-      if (Object.values(storeColumns).length > +columnId!) {
-        const arr = Object.values(storeColumns);
+      if (Object.values(updateColumns).length > +columnId!) {
+        const arr = Object.values(updateColumns);
         arr.splice(+columnId!, 0, newColumn);
         newColumns = orderingColumns(arr);
       } else {
-        newColumns = { ...storeColumns, [id]: newColumn };
+        newColumns = { ...updateColumns, [id]: newColumn };
       }
       onToast(type);
       updateStateAndLocalSt(setUpdateColumns, newColumn, newColumns);
+      HTMLWrapperColumnList.style.scrollBehavior = 'smooth';
       setTimeout(() => {
         HTMLColumnList.childNodes[+columnId!].scrollIntoView();
+        HTMLWrapperColumnList.style.scrollBehavior = 'auto';
       }, 10);
     }
     if (type === 'editColumn' || type === 'removeColumn')
@@ -78,12 +85,12 @@ const useRenameField = () => {
 
   function handleRename() {
     const getFocus = () => {
-      let wrappIcon:any
-      const elem = refInput.current!
+      let wrappIcon: any;
+      const elem = refInput.current!;
       elem.focus();
       elem.selectionStart = elem.value.length;
-      if(elem.name === 'taskName') wrappIcon = elem.closest('.card')
-      else wrappIcon = elem.closest('form').nextElementSibling.childNodes[1]
+      if (elem.name === 'taskName') wrappIcon = elem.closest('.card');
+      else wrappIcon = elem.closest('form').nextElementSibling.childNodes[1];
       //Задаю атрибут для отрисовки иконки редактирования на карте
       wrappIcon.setAttribute('edit', 'true');
       if (refInput.current) {
@@ -93,7 +100,7 @@ const useRenameField = () => {
             setTimeout(() => {
               wrappIcon!.setAttribute('edit', 'false');
               setRenameTitle(false);
-            }, 100);
+            }, 150);
         };
       }
     };
@@ -111,14 +118,14 @@ const useRenameField = () => {
     let newColumn: IColumn;
     if (columnName) {
       title = columnName;
-      newColumn = { ...storeColumns[columnId!], title: columnName };
+      newColumn = { ...updateColumns[columnId!], title: columnName };
       onToast('editColumnTitle');
     } else {
       title = taskName;
-      const newState = [...storeColumns[columnId!].state];
+      const newState = [...updateColumns[columnId!].state];
       const newTask = { ...newState[+taskIdx!], title: taskName };
       newState.splice(+taskIdx!, 1, newTask);
-      newColumn = { ...storeColumns[columnId!], state: newState };
+      newColumn = { ...updateColumns[columnId!], state: newState };
       onToast('editTaskTitle');
     }
     setEditedTitle(title);

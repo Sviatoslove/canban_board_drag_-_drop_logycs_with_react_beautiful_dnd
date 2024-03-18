@@ -1,9 +1,5 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useFormsData } from '../../../hooks/useFormsData';
 import { validatorConfig } from '../../../utils/validator';
 import TextField from '../../common/fields/TextField';
@@ -11,16 +7,16 @@ import { IFieldsProps, IFormProps } from '../../../utils/types';
 import CustomSelectField from '../../common/fields/CustomSelectField';
 import { formSettings } from './settingsForm';
 import { menuItemStyles } from '../../../chakra/customSelectedFieldStyles';
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import localStorageService from '../../../services/localStorage.service';
 
 const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
   const { fields, btnTitle, defaultState } = formSettings[type];
-  const userColumns:any = localStorageService.getColumns()
+  const userColumns: any = localStorageService.getColumns();
+
   const initialState =
-  typeof defaultState === 'function'
-  ? defaultState(userColumns[columnId])
-  : defaultState;
+    typeof defaultState === 'function'
+      ? defaultState(userColumns[columnId])
+      : defaultState;
 
   const useFormsDataProps: any = {
     state: {
@@ -72,16 +68,14 @@ const Form = ({ type, onClose, columnId, onSubmit }: IFormProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <>{fields.map((field) => Fields[field.typeField](field))}</>
         <Flex mt={4} ml={'auto'} w={'fit-content'}>
-          <Stack direction="row" spacing={4}>
-            <Button
-              colorScheme="green"
-              type="submit"
-              isDisabled={!!Object.values(errors.fields).length}
-              loadingText="Отправка запроса"
-            >
-              {btnTitle}
-            </Button>
-          </Stack>
+          <Button
+            colorScheme="green"
+            type="submit"
+            isDisabled={!!Object.values(errors.fields).length}
+            loadingText="Отправка запроса"
+          >
+            {btnTitle}
+          </Button>
           <Button ml={4} onClick={onClose}>
             Назад
           </Button>

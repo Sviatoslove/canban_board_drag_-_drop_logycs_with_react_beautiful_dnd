@@ -5,18 +5,7 @@ import {
   Text,
   useMultiStyleConfig,
 } from '@chakra-ui/react';
-
-interface ITextfieldProps {
-  name: string;
-  value: string;
-  label?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
-  placeholder?: string;
-  variant?: string;
-  refDiv?: any;
-  inputClassName?: string;
-}
+import { ITextfieldProps } from '../../../utils/types';
 
 const TextField = ({
   name,

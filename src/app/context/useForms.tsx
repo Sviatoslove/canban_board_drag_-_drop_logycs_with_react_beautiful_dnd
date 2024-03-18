@@ -24,6 +24,8 @@ import { orderingColumns } from '../utils/orderingColumns';
 import localStorageService from '../services/localStorage.service';
 import { updateStateAndLocalSt } from '../utils/updateStateAndLocalSt';
 import { useKanbanBoard } from '../hooks/useKanbanBoard';
+import { useAppSelector } from '../store/createStore';
+import { selectColumns } from '../store/columnsSlice';
 
 const defaultState = {
   isOpen: false,
@@ -43,9 +45,10 @@ const FormsContext = createContext<IFormsContext>(defaultState);
 
 const useForms = () => useContext(FormsContext);
 
-const FormsProvider = ({ children }: IFormsProviderProps) => {
-  const storeColumns: IColumns = localStorageService.getColumns();
-  const [updateColumns, setUpdateColumns] = useState<IColumns>(storeColumns);
+const FormsProvider = ({children }: IFormsProviderProps) => {
+  const storeColumns = useAppSelector(selectColumns());
+  const storageColumns: IColumns = localStorageService.getColumns();
+  const [updateColumns, setUpdateColumns] = useState<IColumns>(storageColumns || storeColumns);
   const { handleDragEnd } = useKanbanBoard(updateColumns, setUpdateColumns);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [closeOnSelect, setCloseOnSelect] = useState<{ [x: string]: boolean }>(
@@ -94,16 +97,13 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
     let store: IColumns;
     let newTask: ITask;
     const completed = completedStore === 'false' ? false : true;
-    if (
-      type === 'addColumn'
-      //  || type === 'addTask'
-    ) {
+    if (type === 'addColumn') {
       newTask = {
         completed: false,
         createdAt: Date.now(),
         problems: getRandomNum(50, 67),
         completedProblems: getRandomNum(0, 45),
-        status: columnName || storeColumns[columnId!]?.title,
+        status: columnName || updateColumns[columnId!]?.title,
         id: Date.now().toString(),
         title: taskName,
         userId: '1',
@@ -112,7 +112,7 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
     switch (type) {
       case 'addColumn': {
         column = {
-          id: (Object.values(storeColumns).length + 1).toString(),
+          id: (Object.values(updateColumns).length + 1).toString(),
           title: columnName,
           colorBadge,
           colorText,
@@ -121,16 +121,9 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         };
         break;
       }
-      // case 'addTask': {
-      //   column = {
-      //     ...storeColumns[columnId!],
-      //     state: [...storeColumns[columnId!].state, newTask!],
-      //   };
-      //   break;
-      // }
       case 'editColumn': {
         column = {
-          ...storeColumns[columnId!],
+          ...updateColumns[columnId!],
           colorBadge,
           colorText,
           completed,
@@ -138,10 +131,10 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         break;
       }
       case 'removeColumn': {
-        if (Object.values(storeColumns).length === 1) {
+        if (Object.values(updateColumns).length === 1) {
           store = {};
         } else {
-          const arr = Object.values(storeColumns).filter(
+          const arr = Object.values(updateColumns).filter(
             (column) => column.id !== columnId
           );
           store = orderingColumns(arr);
@@ -149,18 +142,18 @@ const FormsProvider = ({ children }: IFormsProviderProps) => {
         break;
       }
       case 'removeTask': {
-        if (storeColumns[columnId].state.length === 1) {
+        if (updateColumns[columnId].state.length === 1) {
           column = {
-            ...storeColumns[columnId],
-            state:[]
+            ...updateColumns[columnId],
+            state: [],
           };
         } else {
-          const arr = storeColumns[columnId].state.filter(
+          const arr = updateColumns[columnId].state.filter(
             (task) => task.id !== taskId
           );
           column = {
-            ...storeColumns[columnId],
-            state: [...arr]
+            ...updateColumns[columnId],
+            state: [...arr],
           };
         }
         break;

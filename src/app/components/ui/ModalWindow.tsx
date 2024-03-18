@@ -5,15 +5,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { FuncVoid } from '../../utils/types';
-
-interface ModalWindowProps {
-  title?: string;
-  isOpen: boolean;
-  onClose: FuncVoid;
-  // content?: string;
-  children?: React.ReactNode;
-}
+import { ModalWindowProps } from '../../utils/types';
 
 const ModalWindow = ({
   title,

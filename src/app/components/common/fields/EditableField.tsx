@@ -1,23 +1,8 @@
-import { OnsubmitFunc } from '../../../context/useFormsTypes';
 import { IStateProps, useFormsData } from '../../../hooks/useFormsData';
+import { IEditableField } from '../../../utils/types';
 import { validatorConfig } from '../../../utils/validator';
 import TextAreaField from './TextAreaField';
 import TextField from './TextField';
-
-interface IEditableField {
-  title: string;
-  name: string;
-  columnId?: string;
-  onSubmit: OnsubmitFunc;
-  taskIdx?: string;
-  settings?: {
-    variant?: string;
-    refDiv?: any;
-    placeholder?: string;
-    textAreaClassName?: string;
-    inputClassName?: string;
-  };
-}
 
 const EditableField = ({
   title,
@@ -27,6 +12,7 @@ const EditableField = ({
   onSubmit,
   taskIdx,
 }: IEditableField) => {
+
   const useFormsDataProps: IStateProps = {
     state: {
       defaultState: { [name]: title },

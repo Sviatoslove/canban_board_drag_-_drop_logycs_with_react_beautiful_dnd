@@ -6,25 +6,34 @@ import {
 } from '@chakra-ui/react';
 
 const SkeletonKanbanBoard = () => {
-  const styles = useMultiStyleConfig('Flex', {
+  const kanbanBoardStyles = useMultiStyleConfig('Flex', {
     variant: 'kanbanBoard',
   });
 
+  const columnStyles = useMultiStyleConfig('Flex', {
+    variant: 'column',
+  });
+
+  const cardStyles = useMultiStyleConfig('Flex', {
+    variant: 'card',
+  });
+
   return (
-    <Flex sx={styles.wrapper}>
-      <Flex sx={styles.columnList}>
+    <Flex sx={kanbanBoardStyles.wrapper}>
+      <Flex sx={kanbanBoardStyles.columnList}>
         {[1, 2, 3].map((column: number) => (
-          <Flex sx={styles.column} className="columns" key={column}>
+          <Flex sx={columnStyles.column} className="columns" key={column}>
             <Flex justifyContent={'space-between'} alignItems={'center'}>
               <Skeleton height="22px" w={'76px'} borderRadius={'10px'} />
               <Skeleton height="18px" w={'40px'} borderRadius={'10px'} />
             </Flex>
-            <Flex sx={styles.columnContent}>
+            <Skeleton sx={columnStyles.buttonAddTask} mt={'9px'} />
+            <Flex sx={columnStyles.columnContent}>
               {[1, 2, 3, 4, 5].map((task, index) => (
-                <Flex key={index} sx={styles.card}>
+                <Flex key={index} sx={cardStyles.card}>
                   <Skeleton w={'100%'} height="21px" />
-                  <Flex sx={styles.icons}>
-                    <Skeleton sx={styles.badgeDate} />
+                  <Flex sx={cardStyles.icons}>
+                    <Skeleton __css={cardStyles.badgeDate} w={'100px'} borderRadius={'10px'}/>
                     <Flex w={'96px'}>
                       <Skeleton w={'67px'} h={'24px'} />
                       <SkeletonCircle
@@ -39,7 +48,6 @@ const SkeletonKanbanBoard = () => {
                 </Flex>
               ))}
             </Flex>
-            <Skeleton sx={styles.buttonAddTask} />
           </Flex>
         ))}
       </Flex>

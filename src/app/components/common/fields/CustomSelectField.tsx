@@ -40,7 +40,6 @@ interface ISelectFieldProps {
     refSettingsColumn: any;
     columnId?: string;
   };
-  wrapperStyles?: IDefaultState;
   nameClass?: string;
   icon?: ReactElement<any, string | JSXElementConstructor<any>> | undefined;
 }
@@ -60,9 +59,8 @@ const CustomSelectField = ({
   menuItemStyles,
   icon,
   variant,
-  wrapperStyles,
   menuOption,
-  nameClass
+  nameClass,
 }: ISelectFieldProps) => {
   const styles = useMultiStyleConfig('CustomSelectField', {
     variant,
@@ -88,7 +86,11 @@ const CustomSelectField = ({
   };
 
   return (
-    <FormControl isInvalid={!!error} mt={2} sx={wrapperStyles} className='formControl'>
+    <FormControl
+      className="formControl"
+      sx={styles.wrapper}
+      isInvalid={!!error}
+    >
       <label htmlFor={name}>{label}</label>
       <Menu
         isOpen={menuOption?.closeOnSelect[menuOption.columnId!]}
@@ -103,7 +105,7 @@ const CustomSelectField = ({
           {value ? getTitle() : placeholder}
           {icon}
         </MenuButton>
-        <MenuList w={'320px'} p={0} sx={styles.menu}>
+        <MenuList sx={styles.menuList}>
           <MenuGroup title={titleList} display={'flex'}>
             {options?.map((item, idx) => (
               <MenuItem
